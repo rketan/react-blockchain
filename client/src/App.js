@@ -38,6 +38,8 @@ class App extends Component {
         deployedNetwork && deployedNetwork.address
       );
 
+      console.log("Account 0 address : ", accounts[0]);
+      
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
       this.setState({ web3, accounts, storageContract: storageInstance, contract: productTrackingInstance }, this.runExample);
@@ -62,17 +64,43 @@ class App extends Component {
     let productsCount = await this.state.contract.methods.productsCount().call();
     console.log("debug:::: ", productsCount);
 
-    this.fetchProducts(productTrackingContract, productsCount).then(function(localProducts) {
-      console.log("debug main func::: ", localProducts);
+    // get man list and check if this account is assigned the correct role
+    const isMan = await this.state.contract.methods.isManufacturer(accounts[0]).call();
+    console.log("Debug : isMan : ", isMan);
+
+    if(!isMan) {
+      // assign manufacturer role to this account
+      const assignMan = await this.state.contract.methods.addManufacturer(accounts[0]).call();
+    }
+
+    this.fetchProducts(productsCount).then(function(localProducts) {
+      console.log("debug fetch product callback func ::: ", localProducts);
       this.setState({storageValue: response, products: localProducts}, this.traverseProducts);
     }.bind(this));
 
   };
 
-  addProduct() {
-    alert('Add product api called!');
-    const response1 = this.state.contract.methods.addProduct("rutvi").call();
-    console.log("add product called");
+  addProduct = async () => {
+    console.log('Add product api called!');
+
+    let response = await this.state.contract.methods.manufactureProduct(1, "Air Jordans", this.state.accounts[0])
+    .send({from: this.state.accounts[0]});
+
+    response = await this.state.contract.methods.manufactureProduct(2, "Organic Honey", this.state.accounts[0])
+    .send({from: this.state.accounts[0]});
+
+    response = await this.state.contract.methods.manufactureProduct(3, "Matcha Tea", this.state.accounts[0])
+    .send({from: this.state.accounts[0]});
+
+    let productsCount = await this.state.contract.methods.productsCount().call();
+    console.log("product count :::: ", productsCount);
+
+    this.fetchProducts(productsCount).then(function(localProducts) {
+      console.log("debug fetch product callback func ::: ", localProducts);
+      this.setState({products: localProducts}, this.traverseProducts);
+    }.bind(this));
+
+    console.log("Add product call ended!");
   };
 
   traverseProducts() {
@@ -81,24 +109,21 @@ class App extends Component {
     })
   }
 
-  fetchProducts(productTrackingContract, productsCount) {
+  fetchProducts(productsCount) {
     let localProducts = [];
     
     const forLoop = async _ => {
       console.log("Start");
       
-    for(let index = 1; index <= productsCount; index++) {
-      let product = await this.state.contract.methods.products(index).call();
-      console.log("inside loop : ", product);
-      localProducts.push(product);
-    }
-
-   // _callback(localProducts);
-     console.log("End");
+      for(let index = 1; index <= productsCount; index++) {
+        let product = await this.state.contract.methods.products(index).call();
+        console.log("inside loop : ", product);
+        localProducts.push(product);
+      }
+     
+      console.log("End");
       return localProducts;
-     };
-
-     ;
+    };
 
     return new Promise((resolve, reject) => {
       resolve(forLoop());
@@ -118,12 +143,13 @@ class App extends Component {
           <ul>
             {
               this.state.products.map(item => {
-                return <div>{item[0]} : {item[1]} : {item[2]} </div>
+                return <div>{item[0]} : {item[1]} </div>
               })
             }
           </ul>
         </div>
-        <button onclick={this.addProduct}>Add Product</button>
+        <button onClick={() => {this.addProduct();}}> 
+        Add Product</button>
       </div>
     );
   }
