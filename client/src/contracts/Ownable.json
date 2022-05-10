@@ -96,7 +96,7 @@
   "sourceMap": "75:1608:7:-;;;283:115;8:9:-1;5:2;;;30:1;27;20:12;5:2;283:115:7;326:10;314:9;;:22;;;;;;;;;;;;;;;;;;381:9;;;;;;;;;;;351:40;;377:1;351:40;;;;;;;;;;;;75:1608;;;;;;",
   "deployedSourceMap": "75:1608:7:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;75:1608:7;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;448:112;;;:::i;:::-;;1070:140;;;:::i;:::-;;607:80;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;924:93;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;1271:115;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;1271:115:7;;;;;;;;;;;;;;;;;;;:::i;:::-;;448:112;499:9;;;;;;;;;;;485:23;;:10;:23;;;481:73;;;533:9;;;;;;;;;;;520:23;;;481:73;448:112::o;1070:140::-;779:9;:7;:9::i;:::-;771:63;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1168:1;1131:40;;1149:9;;;;;;;;;;;1131:40;;;;;;;;;;;;1201:1;1181:9;;:22;;;;;;;;;;;;;;;;;;1070:140::o;607:80::-;645:7;671:9;;;;;;;;;;;664:16;;607:80;:::o;924:93::-;964:4;1001:9;;;;;;;;;;;987:23;;:10;:23;;;980:30;;924:93;:::o;1271:115::-;779:9;:7;:9::i;:::-;771:63;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1351:28;1370:8;1351:18;:28::i;:::-;1271:115;:::o;1450:231::-;1551:1;1531:22;;:8;:22;;;;1523:68;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1635:8;1606:38;;1624:9;;;;;;;;;;;1606:38;;;;;;;;;;;;1666:8;1654:9;;:20;;;;;;;;;;;;;;;;;;1450:231;:::o",
   "source": "pragma solidity >=0.4.22 <0.9.0;\n\n/// Provides basic authorization control\ncontract Ownable {\n    address payable private origOwner;\n\n    // Define an Event\n    event TransferOwnership(address indexed oldOwner, address indexed newOwner);\n\n    /// Assign the contract to an owner\n    constructor() public {\n        origOwner = msg.sender;\n        emit TransferOwnership(address(0), origOwner);\n    }\n\n    // Define a function 'kill' if required\n    function kill() public {\n        if (msg.sender == origOwner) {\n        selfdestruct(origOwner);\n        }\n    }\n\n    /// Look up the address of the owner\n    function owner() public view returns (address) {\n        return origOwner;\n    }\n\n    /// Define a function modifier 'onlyOwner'\n    modifier onlyOwner() {\n        require(isOwner(), \"Only the owner can perform this operation\");\n        _;\n    }\n\n    /// Check if the calling address is the owner of the contract\n    function isOwner() public view returns (bool) {\n        return msg.sender == origOwner;\n    }\n\n    /// Define a function to renounce ownerhip\n    function renounceOwnership() public onlyOwner {\n        emit TransferOwnership(origOwner, address(0));\n        origOwner = address(0);\n    }\n\n    /// Define a public function to transfer ownership\n    function transferOwnership(address payable newOwner) public onlyOwner {\n        _transferOwnership(newOwner);\n    }\n\n    /// Define an internal function to transfer ownership\n    function _transferOwnership(address payable newOwner) internal {\n        require(newOwner != address(0), \"The new Owner cannot be address 0\");\n        emit TransferOwnership(origOwner, newOwner);\n        origOwner = newOwner;\n    }\n}",
-  "sourcePath": "/Users/rthakkar/blockchain/react-blockchain/contracts/core/Ownable.sol",
+  "sourcePath": "/mnt/c/asus-files/uci/quarter2/capstone/blockchain/react-blockchain/contracts/core/Ownable.sol",
   "ast": {
     "absolutePath": "project:/contracts/core/Ownable.sol",
     "exportedSymbols": {
@@ -3437,7 +3437,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.7",
-  "updatedAt": "2022-05-09T19:51:49.682Z",
+  "updatedAt": "2022-05-10T05:36:47.535Z",
   "devdoc": {
     "methods": {}
   },
