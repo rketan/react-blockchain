@@ -6,7 +6,6 @@ class ViewProducts extends Component {
 
     constructor(props) {
         super(props);
-
         this.state = {web3: null, accounts: null, contract: null, products: []};
         this.traverseProducts = this.traverseProducts.bind(this);
         this.fetchProducts = this.fetchProducts.bind(this);
