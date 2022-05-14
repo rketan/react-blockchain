@@ -1,44 +1,25 @@
-import React, {useState} from "react";
+import React, { useState, useContext } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import "../css/Login.css";
-import {useNavigate} from "react-router";
-import getWeb3 from "./getWeb3";
-import ProductTrackingContract from "../contracts/ProductTracking.json";
+import { useNavigate } from "react-router";
+import { AppContext } from './App'
 
 function LandingPage() {
-
-    const [web3, setWeb3] = useState(null);
-    const [accounts, setAccounts] = useState(null);
-
-    const [contract, setContract] = useState(null);
-
-    const [products, setProducts] = useState([]);
-
+    const { web3, contract, accountId } = useContext(AppContext);
+    const [localWeb3, setLocalWeb3] = web3;
+    const [localContract, setLocalContract] = contract;
+    const [account, setAccount] = accountId;
 
     React.useEffect(() => {
-        // Get network provider and web3 instance.
+        const fetchAccounts = async () => {
+            if (localWeb3 !== undefined || localWeb3 !== null) {
+                // Use web3 to get the user's accounts.
+                const accounts = await localWeb3.eth.getAccounts();
+            }
 
-        const fetchWeb3 = async () => {
-            const web3 = await getWeb3();
-
-            // Use web3 to get the user's accounts.
-            const accounts = await web3.eth.getAccounts();
-
-            // Get the contract instance.
-            const networkId = await web3.eth.net.getId();
-
-
-            let deployedNetwork = ProductTrackingContract.networks[networkId];
-            const productTrackingInstance = new web3.eth.Contract(
-                ProductTrackingContract.abi,
-                deployedNetwork && deployedNetwork.address
-            );
-            setWeb3(web3);
-            setAccounts(accounts);
-            setContract(productTrackingInstance);
         };
-        fetchWeb3().catch(console.error);
+        fetchAccounts().catch(console.error);
     }, []);
 
 
@@ -58,13 +39,13 @@ function LandingPage() {
     }
 
     async function assignRole(ethId) {
-        // get man list and check if this account is assigned the correct role
-        const isMan = contract.methods.isManufacturer(ethId).call();
-        console.log("Debug : isMan : ", isMan);
-
-        if (!isMan) {
-            // assign manufacturer role to this account
-            const assignMan = await contract.methods.addManufacturer(ethId).call();
+        // Get manufacturer list and check if this account is assigned the correct role
+        if (localContract !== undefined || localContract.methods !== undefined) {
+            const isManufacturer = await localContract.methods.isManufacturer(ethId).call();
+            if (!isManufacturer) {
+                // assign manufacturer role to this account
+                const assignMan = await localContract.methods.addManufacturer(ethId).call();
+            }
         }
     }
 
@@ -72,17 +53,18 @@ function LandingPage() {
         event.preventDefault();
         switch (userType) {
             case VENDOR:
-                navigate("/vendor", {state: {"userName": userName}});
+                navigate("/vendor", { state: { "userName": userName } });
                 break;
             case MANUFACTURER:
                 assignRole(userEthereumId);
-                navigate("/manufacturer", {state: {"userName": userName}});
+                setAccount(userEthereumId);
+                navigate("/manufacturer", { state: { "userName": userName } });
                 break;
             case DISTRIBUTOR:
-                navigate("/distributor", {state: {"userName": userName}});
+                navigate("/distributor", { state: { "userName": userName } });
                 break;
             case CUSTOMER:
-                navigate("/customer", {state: {"userName": userName}});
+                navigate("/customer", { state: { "userName": userName } });
                 break;
             default:
                 console.log("Invalid user type");
@@ -115,7 +97,7 @@ function LandingPage() {
                 <Form.Group size="lg" controlId="user-type">
                     <Form.Label>User Type</Form.Label>
                     <Form.Select aria-label="Default select example" value={userType}
-                                 onChange={(e) => setUserType(e.target.value)}>
+                        onChange={(e) => setUserType(e.target.value)}>
                         <option>User type</option>
                         <option value="vendor">Vendor</option>
                         <option value="manufacturer">Manufacturer</option>
