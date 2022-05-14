@@ -11,7 +11,8 @@ import VendorDashboard from "./vendor/VendorDashboard";
 import CustomerDashboard from "./customer/CustomerDashboard";
 
 export default function router() {
-    return (<Router>
+    return (
+    <Router>
         <Routes>
             {/*TODO: Add nested routes in nested files*/}
 
