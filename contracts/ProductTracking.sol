@@ -36,9 +36,9 @@ contract ProductTracking is
         Manufactured, // 0
         OrderPlaced, // 1
         Shipped, // 2
-        DistRecieved, // 3
+        DistReceived, // 3
         InTransit, // 4
-        VendorRecieved, // 5
+        VendorReceived, // 5
         Purchased // 6
     }
 
@@ -48,9 +48,9 @@ contract ProductTracking is
     event Manufactured(uint256 upc);
     event OrderPlaced(uint256 upc);
     event Shipped(uint256 upc);
-    event DistRecieved(uint256 upc);
+    event DistReceived(uint256 upc);
     event InTransit(uint256 upc);
-    event VendorRecieved(uint256 upc);
+    event VendorReceived(uint256 upc);
     event Purchased(uint256 upc);
 
     constructor() public {
@@ -94,9 +94,9 @@ contract ProductTracking is
     }
 
     // Define a modifier that checks if an item.state of a upc is DistRecieved
-    modifier distRecieved(uint256 _upc) {
+    modifier distReceived(uint256 _upc) {
         require(
-            products[_upc].currentStatus == State.DistRecieved,
+            products[_upc].currentStatus == State.DistReceived,
             "The Item is not in DistRecieved state!"
         );
         _;
@@ -112,9 +112,9 @@ contract ProductTracking is
     }
 
     // Define a modifier that checks if an item.state of a upc is VendorRecieved
-    modifier vendorRecieved(uint256 _upc) {
+    modifier vendorReceived(uint256 _upc) {
         require(
-            products[_upc].currentStatus == State.VendorRecieved,
+            products[_upc].currentStatus == State.VendorReceived,
             "The Item is not in VendorRecieved state!"
         );
         _;
@@ -185,7 +185,7 @@ contract ProductTracking is
     }
 
     // Define a function 'recieveAsDistributor' that allows a disributor to mark an item 'DistRecieved'
-    function recieveAsDistributor(uint256 _upc)
+    function receiveAsDistributor(uint256 _upc)
         public
         onlyDistributor
         shipped(_upc)
@@ -195,16 +195,16 @@ contract ProductTracking is
         existingItem.ownerID = msg.sender;
         existingItem.distributorID = msg.sender;
         //Update state
-        existingItem.currentStatus = State.DistRecieved;
+        existingItem.currentStatus = State.DistReceived;
         // emit the appropriate event
-        emit DistRecieved(_upc);
+        emit DistReceived(_upc);
     }
 
     // Define a function 'shipToVendor' that allows the distributor to mark an item 'InTransit'
     function shipToVendor(uint256 _upc)
         public
         onlyDistributor
-        distRecieved(_upc)
+        distReceived(_upc)
         verifyCaller(products[_upc].distributorID)
     {
         //Retrieve product
@@ -216,22 +216,22 @@ contract ProductTracking is
     }
 
     // Define a function 'recieveAsVendor' that allows a disributor to mark an item 'VendorRecieved'
-    function recieveAsVendor(uint256 _upc) public onlyVendor inTransit(_upc) {
+    function receiveAsVendor(uint256 _upc) public onlyVendor inTransit(_upc) {
         //Retrieve product and update new owner
         Product storage existingItem = products[_upc];
         existingItem.ownerID = msg.sender;
         existingItem.vendorID = msg.sender;
         //Update state
-        existingItem.currentStatus = State.VendorRecieved;
+        existingItem.currentStatus = State.VendorReceived;
         // emit the appropriate event
-        emit VendorRecieved(_upc);
+        emit VendorReceived(_upc);
     }
 
     // Define a function 'shipToVendor' that allows the distributor to mark an item 'Purchased'
     function sellProduct(uint256 _upc)
         public
         onlyVendor
-        vendorRecieved(_upc)
+        vendorReceived(_upc)
         verifyCaller(products[_upc].vendorID)
     {
         //Retrieve product

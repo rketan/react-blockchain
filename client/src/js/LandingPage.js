@@ -42,6 +42,8 @@ function LandingPage() {
         // Get manufacturer list and check if this account is assigned the correct role
         if (localContract !== undefined || localContract.methods !== undefined) {
             const isManufacturer = await localContract.methods.isManufacturer(ethId).call();
+            const isVendor = await localContract.methods.isVendor(ethId).call();
+            const isDistributor = await localContract.methods.isDistributor(ethId).call();
             if (!isManufacturer) {
                 // assign manufacturer role to this account
                 const assignMan = await localContract.methods.addManufacturer(ethId).call();

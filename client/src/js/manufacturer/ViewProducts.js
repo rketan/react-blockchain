@@ -22,13 +22,13 @@ class ViewProducts extends Component {
 
             // Get the contract instance.
             const networkId = await web3.eth.net.getId();
-
-
-            let deployedNetwork = ProductTrackingContract.networks[networkId];
             const productTrackingInstance = new web3.eth.Contract(
                 ProductTrackingContract.abi,
                 deployedNetwork && deployedNetwork.address
             );
+
+            let deployedNetwork = ProductTrackingContract.networks[networkId];
+
             this.setState({
                 web3,
                 accounts,
