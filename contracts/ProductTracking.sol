@@ -13,8 +13,10 @@ contract ProductTracking is
 {
     // Model a Product
     struct Product {
+        uint256 sku;
         uint256 productID;
         string name;
+        string desc;
         address payable ownerID;
         State currentStatus;
         address payable distributorID;
@@ -133,6 +135,8 @@ contract ProductTracking is
     function manufactureProduct(
         uint256 _upc,
         string memory name,
+        uint256 _sku,
+        string memory desc,
         address payable _originManufacturerID
     ) public onlyManufacturer {
         // Add the new item as part of Harvest
@@ -141,6 +145,8 @@ contract ProductTracking is
         newItem.manufacturerID = _originManufacturerID; //NEW ADDITION
         newItem.productID = _upc;
         newItem.name = name;
+        newItem.sku = _sku;
+        newItem.desc = desc;
 
         productsCount = productsCount + 1;
 

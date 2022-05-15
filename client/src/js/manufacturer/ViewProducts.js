@@ -1,116 +1,71 @@
-import React, {Component} from 'react';
-import getWeb3 from "../getWeb3";
-import ProductTrackingContract from "../../contracts/ProductTracking.json";
+import React, { useContext, useState } from 'react';
+import { AppContext } from '../App'
+import Table from 'react-bootstrap/Table'
 
-class ViewProducts extends Component {
+function ViewProducts() {
+    const { web3, contract, accountId } = useContext(AppContext);
+    const [localContract, setLocalContract] = contract;
+    const [products, setProducts] = useState([]);
 
-    constructor(props) {
-        super(props);
-        this.state = {web3: null, accounts: null, contract: null, products: []};
-        this.traverseProducts = this.traverseProducts.bind(this);
-        this.fetchProducts = this.fetchProducts.bind(this);
-        this.addProduct = this.addProduct.bind(this);
-    }
+    React.useEffect(() => {
+        const getProducts = async () => {
+            let productsCount = await localContract.methods.productsCount().call();
+            fetchProducts(productsCount)
+                .then(function (localProducts) {
+                setProducts(localProducts);
+            }.bind(this));
 
-    componentDidMount = async () => {
-        try {
-            // Get network provider and web3 instance.
-            const web3 = await getWeb3();
+        };
 
-            // Use web3 to get the user's accounts.
-            const accounts = await web3.eth.getAccounts();
+        getProducts().catch(console.error);
+    }, []);
 
-            // Get the contract instance.
-            const networkId = await web3.eth.net.getId();
-
-
-            let deployedNetwork = ProductTrackingContract.networks[networkId];
-            const productTrackingInstance = new web3.eth.Contract(
-                ProductTrackingContract.abi,
-                deployedNetwork && deployedNetwork.address
-            );
-            this.setState({
-                web3,
-                accounts,
-                contract: productTrackingInstance
-            }, this.runExample);
-        } catch (error) {
-            // Catch any errors for any of the above operations.
-            alert(
-                `Failed to load web3, accounts, or contract. Check console for details.`,
-            );
-            console.error(error);
-        }
-    };
-
-    runExample = async () => {
-        const {productTrackingContract} = this.state;
-
-        let productsCount = await this.state.contract.methods.productsCount().call();
-        console.log("debug:::: ", productsCount);
-
-        this.fetchProducts(productTrackingContract, productsCount).then(function (localProducts) {
-            console.log("debug main func::: ", localProducts);
-            this.setState({products: localProducts}, this.traverseProducts);
-        }.bind(this));
-
-    };
-
-    addProduct() {
-        alert('Add product api called!');
-        const response1 = this.state.contract.methods.addProduct("rutvi").call();
-        console.log("add product called");
-    };
-
-    traverseProducts() {
-        this.state.products.map(item => {
-            console.log("product : ", item);
-        })
-    }
-
-    fetchProducts(productTrackingContract, productsCount) {
+    async function fetchProducts(productsCount) {
         let localProducts = [];
-
-        const forLoop = async _ => {
-            console.log("Start");
-
+        const loopThroughProducts = async _ => {
             for (let index = 1; index <= productsCount; index++) {
-                let product = await this.state.contract.methods.products(index).call();
-                console.log("inside loop : ", product);
+                let product = await localContract.methods.products(index).call();
                 localProducts.push(product);
             }
-
-            // _callback(localProducts);
-            console.log("End");
             return localProducts;
         };
 
         return new Promise((resolve, reject) => {
-            resolve(forLoop());
+            resolve(loopThroughProducts());
         });
     }
 
-    render() {
-        if (!this.state.web3) {
-            return <div>Loading Web3, accounts, and contract...</div>;
-        }
-        return (
-            <div className="App">
-                <h1>Good to Go!</h1>
-                <div>
-                    === Products Array ====
-                    <div>Product Num : Product Name : Status </div>
-                    <ul>
-                        {
-                            this.state.products.map(item => {
-                                return <div>{item[0]} : {item[1]} : {item[2]} </div>
-                            })
-                        }
-                    </ul>
-                </div>
-            </div>
-        );
-    }
+    return (
+        <>
+            <h1>View products</h1>
+            <br />
+            <Table>
+                <thead>
+                    <tr>
+                        <th>UUID</th>
+                        <th>SKU</th>
+                        <th>Product Name</th>
+                        <th>Product Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {products.map(item => {
+                        return (
+                            <tr>
+                                <td>{item.productID}</td>
+                                <td>{item.sku}</td>
+                                <td>{item.name}</td>
+                                <td>{item.desc}</td>
+                            </tr>
+                        );
+
+
+                    })
+                    }
+                </tbody>
+            </Table>
+        </>
+    );
 }
 
 export default ViewProducts;

@@ -2,19 +2,11 @@
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router";
 import { Button } from "react-bootstrap";
-import React, { useContext } from "react";
-import { AppContext } from '../App'
+import React from "react";
 
 function ManufacturerDashboard() {
-    const { web3, contract, accountId } = useContext(AppContext);
-    const [account, setAccount] = accountId;
-
     const navigate = useNavigate();
     const location = useLocation();
-
-    React.useEffect(() => {
-        console.log("Debug: Account ID", account);
-    }, []);
 
     return (
         <>

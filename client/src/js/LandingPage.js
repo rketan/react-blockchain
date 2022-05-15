@@ -15,7 +15,7 @@ function LandingPage() {
         const fetchAccounts = async () => {
             if (localWeb3 !== undefined || localWeb3 !== null) {
                 // Use web3 to get the user's accounts.
-                const accounts = await localWeb3.eth.getAccounts();
+                //const accounts = await localWeb3.eth.getAccounts();
             }
 
         };
@@ -44,7 +44,7 @@ function LandingPage() {
             const isManufacturer = await localContract.methods.isManufacturer(ethId).call();
             if (!isManufacturer) {
                 // assign manufacturer role to this account
-                const assignMan = await localContract.methods.addManufacturer(ethId).call();
+                const assignMan = await localContract.methods.addManufacturer(ethId).send({from: ethId});
             }
         }
     }

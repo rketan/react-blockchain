@@ -33,7 +33,7 @@ contract ManufacturerRole {
   }
 
   // Define a function 'addManufacturer' that adds this role
-  function addManufacturer(address account) public onlyManufacturer {
+  function addManufacturer(address account) public {
       _addManufacturer(account);
   }
 
