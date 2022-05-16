@@ -6,10 +6,10 @@ const getWeb3 = () =>
     window.addEventListener("load", async () => {
       // Modern dapp browsers...
       if (window.ethereum) {
-        const web3 = new Web3(window.ethereum);
         try {
           // Request account access if needed
           await window.ethereum.enable();
+          const web3 = new Web3(window.ethereum);
           // Accounts now exposed
           resolve(web3);
         } catch (error) {

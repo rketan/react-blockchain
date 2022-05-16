@@ -7,7 +7,7 @@ import logo from '../static/img/blockchain.jpg'
 import getWeb3 from "./getWeb3";
 import ProductTrackingContract from "../contracts/ProductTracking.json";
 
-export const AppContext = React.createContext();
+export const AppContext = React.createContext(null);
 
 function App() {
 
@@ -41,7 +41,8 @@ function App() {
         return (
             <AppContext.Provider
                 value={{
-                    web3: [web3, setWeb3], contract: [contract, setContract],
+                    web3: [web3, setWeb3],
+                    contract: [contract, setContract],
                     accountId: [accountId, setAccountId]
                 }}>
                 {props.children}

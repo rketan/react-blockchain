@@ -5,7 +5,7 @@ import "../css/Login.css";
 import { useNavigate } from "react-router";
 import { AppContext } from './App'
 
-function LandingPage() {
+function SignUp() {
     const { web3, contract, accountId } = useContext(AppContext);
     const [localWeb3, setLocalWeb3] = web3;
     const [localContract, setLocalContract] = contract;
@@ -42,9 +42,14 @@ function LandingPage() {
         // Get manufacturer list and check if this account is assigned the correct role
         if (localContract !== undefined || localContract.methods !== undefined) {
             const isManufacturer = await localContract.methods.isManufacturer(ethId).call();
+            console.log(ethId);
+            console.log(isManufacturer);
             if (!isManufacturer) {
                 // assign manufacturer role to this account
                 const assignMan = await localContract.methods.addManufacturer(ethId).call();
+                console.log(await localContract.methods.getRole(userEthereumId).call());
+                console.log(await localContract.methods.isManufacturer(userEthereumId).call());
+
             }
         }
     }
@@ -56,7 +61,7 @@ function LandingPage() {
                 navigate("/vendor", { state: { "userName": userName } });
                 break;
             case MANUFACTURER:
-                assignRole(userEthereumId);
+                assignRole(userEthereumId).then(console.log);
                 setAccount(userEthereumId);
                 navigate("/manufacturer", { state: { "userName": userName } });
                 break;
@@ -113,4 +118,4 @@ function LandingPage() {
     );
 }
 
-export default LandingPage;
+export default SignUp;

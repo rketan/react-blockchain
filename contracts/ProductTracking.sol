@@ -57,6 +57,19 @@ contract ProductTracking is
         //TODO
     }
 
+
+    function getRole(address payable _address) public view returns (string memory) {
+        if (super.isManufacturer(_address)) {
+            return "manufacturer";
+        } else if (super.isVendor(_address)) {
+            return "vendor";
+        } else if (super.isDistributor(_address)) {
+            return "distributor";
+        }
+        return "";
+
+    }
+
     // Define a modifer that verifies the Caller
     modifier verifyCaller(address payable _address) {
         require(
@@ -241,6 +254,7 @@ contract ProductTracking is
         // Emit the appropriate event
         emit Purchased(_upc);
     }
+
     //IMPORTANT, can add 'address payable customerName' to parameters and then set owner id to that of customerName. I didn't do it, because I didn't find it important for the item's history.
     //But we can easily add it in and make use of that. It is up to everyone to agree on
     //Just know that without that, the owner role is practically useless
