@@ -8,6 +8,7 @@ import StateEnum from "../StateEnum"
 function DistributorViewOrders() {
 
     const {web3, contract, accountId} = useContext(AppContext);
+    const localWeb3 = web3;
     const [localContract, setLocalContract] = contract;
     const [products, setProducts] = useState([]);
     const [distributorId, setDistributorId] = accountId;
@@ -18,7 +19,13 @@ function DistributorViewOrders() {
 
 
     React.useEffect(() => {
+
         const getProducts = async () => {
+
+            if(localWeb3 !== undefined && localWeb3.eth !== undefined) {
+                const accounts = await localWeb3.eth.getAccounts();
+                setDistributorId(accounts[0]);
+            }
             let productsCount = await localContract.methods.productsCount().call();
             getDistributorProducts(productsCount)
                 .then(function (localProducts) {
@@ -36,7 +43,6 @@ function DistributorViewOrders() {
     }
 
     function isValidDistributorProduct(product) {
-        // return true;
         return product.distributorID === accountId[0] && validProductStates.includes(product.currentStatus);
     }
 
@@ -116,8 +122,6 @@ function DistributorViewOrders() {
                     <th scope="col">Product Description</th>
                     <th scope="col">Current Order status</th>
                     <th scope="col">Take action</th>
-
-
                 </tr>
                 </thead>
                 <tbody>
