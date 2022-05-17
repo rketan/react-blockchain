@@ -5,7 +5,6 @@ import VendorChangeProductStatus from "./ChangeProductStatus";
 
 function VendorViewOrders() {
 
-
     const {web3, contract, accountId} = useContext(AppContext);
     const [localContract, setLocalContract] = contract;
     const [products, setProducts] = useState([]);
@@ -70,13 +69,12 @@ function VendorViewOrders() {
 
 
     function getOnClickHandler(status, index) {
-        var localIndex = index;
 
-        function handleAcknowledgeShipment() { //TODO: impl
+        function handleAcknowledgeShipment() {
             setModalIsOpenToTrue(index);
         }
 
-        function handleCustomerPurchase() { //TODO: impl
+        function handleCustomerPurchase() {
             setModalIsOpenToTrue(index)
         }
 
