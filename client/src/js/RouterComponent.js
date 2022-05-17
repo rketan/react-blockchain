@@ -5,35 +5,46 @@ import ViewOrders from "./manufacturer/ViewOrders";
 import ChangeProductStatus from "./manufacturer/ChangeStatus";
 import AddProduct from "./manufacturer/AddProducts";
 import ManufacturerDashboard from "./manufacturer/ManufacturerDashboard";
-import LandingPage from "./LandingPage";
+import SignUp from "./SignUp";
+import Login from "./Login";
 import DistributorDashboard from "./distributor/DistributorDashboard";
 import VendorDashboard from "./vendor/VendorDashboard";
 import CustomerDashboard from "./customer/CustomerDashboard";
+import DistributorChangeProductStatus from "./distributor/ChangeProductStatus";
+import DistributorViewOrders from "./distributor/ViewOrders";
+import VendorViewOrders from "./vendor/ViewOrders";
+import VendorChangeProductStatus from "./vendor/ChangeProductStatus";
 
 export default function router() {
     return (
-    <Router>
-        <Routes>
-            {/*TODO: Add nested routes in nested files*/}
+        <Router>
+            <Routes>
+                {/*TODO: Add nested routes in nested files*/}
 
-            <Route exact path="/" element={<LandingPage/>}/>
+                <Route exact path="/" element={<Login/>}/>
+                <Route path="/signup" element={<SignUp/>}/>}
 
-            <Route path="/manufacturer" element={<ManufacturerDashboard/>}/>
-            <Route path="/manufacturer/view-products" element={<ViewProducts/>}/>
-            <Route path="/manufacturer/add-product" element={<AddProduct/>}/>
-            <Route path="/manufacturer/change-product-status" element={<ChangeProductStatus/>}/>
-            <Route path="/manufacturer/view-current-orders" element={<ViewOrders/>}/>
+                <Route path="/manufacturer" element={<ManufacturerDashboard/>}/>
+                <Route path="/manufacturer/view-products" element={<ViewProducts/>}/>
+                <Route path="/manufacturer/add-product" element={<AddProduct/>}/>
+                <Route path="/manufacturer/change-product-status" element={<ChangeProductStatus/>}/>
+                <Route path="/manufacturer/view-current-orders" element={<ViewOrders/>}/>
 
 
-            <Route path="/distributor" element={<DistributorDashboard/>}/>
-            {/*TODO: Add Distributor nested paths*/}
+                <Route path="/distributor" element={<DistributorDashboard/>}/>
+                <Route path="/distributor/change-product-status" element={<DistributorChangeProductStatus/>}/>
+                <Route path="/distributor/view-current-orders" element={<DistributorViewOrders/>}/>
 
-            <Route path="/vendor" element={<VendorDashboard/>}/>
-            {/*TODO: Add Vendor nested paths*/}
+                {/*TODO: Add Distributor nested paths*/}
 
-            <Route path="/customer" element={<CustomerDashboard/>}/>
-            {/*TODO: Add Customer nested paths*/}
+                <Route path="/vendor" element={<VendorDashboard/>}/>
+                <Route path="/vendor/view-current-orders" element={<VendorViewOrders/>}/>
+                <Route path="/vendor/change-product-status" element={<VendorChangeProductStatus/>}/>
 
-        </Routes>
-    </Router>)
+
+                <Route path="/customer" element={<CustomerDashboard/>}/>
+                {/*TODO: Add Customer nested paths*/}
+
+            </Routes>
+        </Router>)
 }

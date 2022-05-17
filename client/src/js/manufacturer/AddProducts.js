@@ -1,19 +1,24 @@
-import React, { useContext, useState } from "react";
-import { AppContext } from '../App'
-import {Form, Button, Card} from 'react-bootstrap'
+import React, {useContext, useState} from "react";
+import {AppContext} from '../App'
+import {Button, Card, Form} from 'react-bootstrap'
 
 function AddProduct() {
-    const { web3, contract, accountId } = useContext(AppContext);
+    const {web3, contract, accountId} = useContext(AppContext);
     const [localContract, setLocalContract] = contract;
     const [account, setAccount] = accountId;
+    const [localWeb3, setLocalWeb3] = web3;
 
     const addProduct = async () => {
+        if (localWeb3 !== undefined && localWeb3.eth !== undefined) {
+            const accounts = await localWeb3.eth.getAccounts();
+            setAccount(accounts[0]);
+        }
+
         if (localContract !== undefined && localContract.methods !== undefined) {
-            let response = await localContract.methods
-                            .manufactureProduct(productUUID, productName, productSKU, productDesc, account)
-                            .send({ from: account });
-            
-            // clear form
+            await localContract.methods
+                .manufactureProduct(productUUID, productName, productSKU, productDesc, account)
+                .send({from: account});
+
             setProductName("");
             setProductUUID("");
             setProductSKU("");
@@ -69,7 +74,7 @@ function AddProduct() {
                             autoFocus
                             type="text"
                             value={productSKU}
-                            onChange={(e) => setProductSKU(e.target.value)} />
+                            onChange={(e) => setProductSKU(e.target.value)}/>
                     </Form.Group>
 
                     <Form.Group id="product-desc">
@@ -82,7 +87,7 @@ function AddProduct() {
                             onChange={(e) => setProductDesc(e.target.value)}
                         />
                     </Form.Group>
-                    <Button className="w-100 mt-3" type="submit" >Submit New Product</Button>
+                    <Button className="w-100 mt-3" type="submit">Submit New Product</Button>
                 </Form>
             </Card.Body>
         </Card>
