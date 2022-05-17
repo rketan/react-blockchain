@@ -2,6 +2,7 @@ import React, {useContext, useState} from "react";
 import {AppContext} from "../App";
 import Table from "react-bootstrap/Table";
 import VendorChangeProductStatus from "./ChangeProductStatus";
+import StateEnum from "../StateEnum";
 
 function VendorViewOrders() {
 
@@ -12,7 +13,7 @@ function VendorViewOrders() {
     const validProductStates = ["4", "5", "6"];
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [stateIndex, setStateIndex] = useState(-1);
-
+    const[shouldRender, setShouldRender] = useState(false);
 
     function isValidVendorProduct(product) {
         return product.vendorID === accountId[0] && validProductStates.includes(product.currentStatus);
@@ -44,9 +45,9 @@ function VendorViewOrders() {
                 });
 
         };
-
+        setShouldRender(false);
         getProducts().catch(console.error);
-    }, []);
+    }, [shouldRender]);
 
     function getButtonNameBasedOnStatus(status) {
         if (status === "4") {
@@ -59,12 +60,13 @@ function VendorViewOrders() {
     }
 
     const setModalIsOpenToTrue = (index) => {
-        setModalIsOpen(true)
-        setStateIndex(index)
+        setModalIsOpen(true);
+        setStateIndex(index);
     }
 
     const setModalIsOpenToFalse = () => {
-        setModalIsOpen(false)
+        setModalIsOpen(false);
+        setShouldRender(true);
     }
 
 
@@ -75,7 +77,7 @@ function VendorViewOrders() {
         }
 
         function handleCustomerPurchase() {
-            setModalIsOpenToTrue(index)
+            setModalIsOpenToTrue(index);
         }
 
         if (status === "4") {
@@ -91,7 +93,7 @@ function VendorViewOrders() {
         } else if (status === "5") {
             return "btn btn-warning btn-sm";
         } else {
-            return "btn btn-success btn-sm"
+            return "btn btn-success btn-sm";
         }
     }
 
@@ -106,6 +108,8 @@ function VendorViewOrders() {
                     <th scope="col">SKU</th>
                     <th scope="col">Product Name</th>
                     <th scope="col">Product Description</th>
+                    <th>Product State</th>
+                    <th>Take action</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -116,6 +120,8 @@ function VendorViewOrders() {
                             <td>{item.sku}</td>
                             <td>{item.name}</td>
                             <td>{item.desc}</td>
+                            <td>{StateEnum[item.currentStatus]}</td>
+
 
                             {modalIsOpen && index === stateIndex &&
                                 <VendorChangeProductStatus

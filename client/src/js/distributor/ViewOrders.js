@@ -3,6 +3,7 @@ import React, {useContext, useState} from "react";
 import {AppContext} from "../App";
 import {Modal, Button} from "react-bootstrap";
 import DistributorChangeProductStatus from './ChangeProductStatus';
+import StateEnum from "../StateEnum"
 
 function DistributorViewOrders() {
 
@@ -13,6 +14,8 @@ function DistributorViewOrders() {
     const validProductStates = ["2", "3"];
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [stateIndex, setStateIndex] = useState(-1);
+    const[shouldRender, setShouldRender] = useState(false);
+
 
     React.useEffect(() => {
         const getProducts = async () => {
@@ -23,9 +26,14 @@ function DistributorViewOrders() {
                 });
 
         };
+        setShouldRender(false)
 
         getProducts().catch(console.error);
-    }, []);
+    }, [shouldRender]);
+
+    function productStateName(productState) {
+        return StateEnum[productState];
+    }
 
     function isValidDistributorProduct(product) {
         // return true;
@@ -58,23 +66,24 @@ function DistributorViewOrders() {
     }
 
     const setModalIsOpenToTrue = (index) => {
-        setModalIsOpen(true)
-        setStateIndex(index)
+        setModalIsOpen(true);
+        setStateIndex(index);
     }
 
     const setModalIsOpenToFalse = () => {
-        setModalIsOpen(false)
+        setModalIsOpen(false);
+        setShouldRender(true);
+
     }
 
 
     function getOnClickHandler(status, index) {
-        var localIndex = index;
 
-        function handleAcknowledgeShipment() { //TODO: impl
+        function handleAcknowledgeShipment() {
             setModalIsOpenToTrue(index);
         }
 
-        function handleVendorShipping() { //TODO: impl
+        function handleVendorShipping() {
             setModalIsOpenToTrue(index)
         }
 
@@ -94,14 +103,6 @@ function DistributorViewOrders() {
 
     }
 
-    async function receiveAsDistributor(productUUID) {
-        productUUID = prompt("enter product id");
-        let response = await localContract.methods
-            .recieveAsDistributor(productUUID)
-            .send({from: distributorId});
-
-    }
-
     return (
         <>
             <h1>View Distributor's orders</h1>
@@ -113,6 +114,10 @@ function DistributorViewOrders() {
                     <th scope="col">SKU</th>
                     <th scope="col">Product Name</th>
                     <th scope="col">Product Description</th>
+                    <th scope="col">Current Order status</th>
+                    <th scope="col">Take action</th>
+
+
                 </tr>
                 </thead>
                 <tbody>
@@ -123,6 +128,7 @@ function DistributorViewOrders() {
                             <td>{item.sku}</td>
                             <td>{item.name}</td>
                             <td>{item.desc}</td>
+                            <td>{productStateName(item.currentStatus)}</td>
 
                             {modalIsOpen && index === stateIndex &&
                                 <DistributorChangeProductStatus
@@ -140,9 +146,6 @@ function DistributorViewOrders() {
                 }
                 </tbody>
             </Table>
-            <Button className="w-100 mt-3" onClick={receiveAsDistributor}>
-                Receive as Distributor</Button>
-
         </>
     );
 }
