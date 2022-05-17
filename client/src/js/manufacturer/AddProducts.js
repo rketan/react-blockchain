@@ -6,8 +6,14 @@ function AddProduct() {
     const { web3, contract, accountId } = useContext(AppContext);
     const [localContract, setLocalContract] = contract;
     const [account, setAccount] = accountId;
+    const [localWeb3, setLocalWeb3] = web3;
 
     const addProduct = async () => {
+        if(localWeb3 !== undefined && localWeb3.eth !== undefined) {
+            const accounts = await localWeb3.eth.getAccounts();
+            setAccount(accounts[0]);
+        }
+
         if (localContract !== undefined && localContract.methods !== undefined) {
             let response = await localContract.methods
                             .manufactureProduct(productUUID, productName, productSKU, productDesc, account)
