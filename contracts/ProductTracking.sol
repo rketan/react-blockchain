@@ -176,7 +176,7 @@ contract ProductTracking is
     }
 
     // Define a function 'shipToDistributor' that allows the manufacturer to mark an item 'Shipped'
-    function shipToDistributor(uint256 _upc)
+    function shipToDistributor(uint256 _upc, address payable distID)
         public
         onlyManufacturer
         orderPlaced(_upc)
@@ -186,6 +186,8 @@ contract ProductTracking is
         Product storage existingItem = products[_upc];
         //Update state
         existingItem.currentStatus = State.Shipped;
+
+        existingItem.distributorID = distID;
         // Emit the appropriate event
         emit Shipped(_upc);
     }

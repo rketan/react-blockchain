@@ -12,6 +12,12 @@ function AddProduct() {
             let response = await localContract.methods
                             .manufactureProduct(productUUID, productName, productSKU, productDesc, account)
                             .send({ from: account });
+            
+            // clear form
+            setProductName("");
+            setProductUUID("");
+            setProductSKU("");
+            setProductDesc("");
         }
     };
 
