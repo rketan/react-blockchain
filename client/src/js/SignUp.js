@@ -94,6 +94,7 @@ function SignUp() {
         <div className="Login" >
             <Form onSubmit={handleSubmit} className="card p-4 bg-light">
                 <Form.Group size="lg" controlId="userName">
+                    <h3 style={{color: "black", textAlign: "center", alignSelf: "center"}}>Signup</h3>
                     <Form.Label>User Name</Form.Label>
                     <Form.Control
                         autoFocus

@@ -188,7 +188,7 @@ VendorRole
     {
         Product storage existingItem = products[_upc];
         existingItem.currentStatus = State.InTransit;
-        existingItem.distributorID = vendorId;
+        existingItem.vendorID = vendorId;
         emit InTransit(_upc);
     }
 

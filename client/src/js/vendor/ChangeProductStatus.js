@@ -2,7 +2,7 @@ import React, {useContext, useState} from "react";
 import {AppContext} from '../App'
 import {Button, Modal} from 'react-bootstrap';
 
-function DistributorChangeProductStatus(props) {
+function VendorChangeProductStatus(props) {
     const [stateValue, setStateValue] = useState(0);
     const [nextValue, setNextValue] = useState(0);
     const [productID, setProductID] = useState(0);
@@ -32,23 +32,13 @@ function DistributorChangeProductStatus(props) {
         // update the state to the backend
         if (localContract.methods !== undefined) {
             const accounts = await localWeb3.eth.getAccounts();
-            if (stateValue === 2) {
-                console.log("rketan: place order")
-                let p1 = await localContract.methods.products(1).call();
-                console.log("rketan: p1 state", p1.currentStatus)
-                console.log("rketan: accid", acc)
-
+            if (stateValue === 4) {
                 if (props.productID !== undefined) {
-                    let event = await localContract.methods.recieveAsDistributor(props.productID).send({from: accounts[0]});
-                    console.log("rketan: response", event)
+                    let event = await localContract.methods.recieveAsVendor(props.productID).send({from: accounts[0]});
                 }
 
-                let p2 = await localContract.methods.products(1).call();
-                console.log("rketan: p2 state", p2.currentStatus)
-
-            } else if (stateValue === 3) {
-                console.log("rketan: ship to vendor") //TOdO: prompt for vendor id
-                const response1 = await localContract.methods.shipToVendor(props.productID, "0x128C691a6A26848E4A7Ed5EbcbC480f55B611Ba8").send({from: accounts[0]});
+            } else if (stateValue === 5) {
+                await localContract.methods.sellProduct(props.productID).send({from: accounts[0]});
             }
         }
         props.parentCallback()
@@ -85,4 +75,4 @@ function DistributorChangeProductStatus(props) {
     );
 }
 
-export default DistributorChangeProductStatus;
+export default VendorChangeProductStatus;

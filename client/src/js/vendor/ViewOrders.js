@@ -1,43 +1,30 @@
-import Table from "react-bootstrap/Table";
 import React, {useContext, useState} from "react";
 import {AppContext} from "../App";
-import {Modal, Button} from "react-bootstrap";
-import DistributorChangeProductStatus from './ChangeProductStatus';
+import Table from "react-bootstrap/Table";
+import VendorChangeProductStatus from "./ChangeProductStatus";
 
-function DistributorViewOrders() {
+function VendorViewOrders() {
+
 
     const {web3, contract, accountId} = useContext(AppContext);
     const [localContract, setLocalContract] = contract;
     const [products, setProducts] = useState([]);
     const [distributorId, setDistributorId] = accountId;
-    const validProductStates = ["2", "3"];
+    const validProductStates = ["4", "5", "6"];
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [stateIndex, setStateIndex] = useState(-1);
 
-    React.useEffect(() => {
-        const getProducts = async () => {
-            let productsCount = await localContract.methods.productsCount().call();
-            getDistributorProducts(productsCount)
-                .then(function (localProducts) {
-                    setProducts(localProducts);
-                });
 
-        };
-
-        getProducts().catch(console.error);
-    }, []);
-
-    function isValidDistributorProduct(product) {
-        // return true;
-        return product.distributorID === accountId[0] && validProductStates.includes(product.currentStatus);
+    function isValidVendorProduct(product) {
+        return product.vendorID === accountId[0] && validProductStates.includes(product.currentStatus);
     }
 
-    async function getDistributorProducts(productsCount) {
+    async function getVendorProducts(productsCount) {
         let localProducts = [];
         const loopThroughProducts = async _ => {
             for (let index = 1; index <= productsCount; index++) {
                 let product = await localContract.methods.products(index).call();
-                if (isValidDistributorProduct(product)) {
+                if (isValidVendorProduct(product)) {
                     localProducts.push(product);
                 }
             }
@@ -49,11 +36,26 @@ function DistributorViewOrders() {
         });
     }
 
+    React.useEffect(() => {
+        const getProducts = async () => {
+            let productsCount = await localContract.methods.productsCount().call();
+            getVendorProducts(productsCount)
+                .then(function (localProducts) {
+                    setProducts(localProducts);
+                });
+
+        };
+
+        getProducts().catch(console.error);
+    }, []);
+
     function getButtonNameBasedOnStatus(status) {
-        if (status === "2") {
+        if (status === "4") {
             return "Acknowledge Shipment";
-        } else if (status === "3") {
-            return "Send to Vendor";
+        } else if (status === "5") {
+            return "Record Customer Purchase";
+        } else {
+            return"Customer Purchased";
         }
     }
 
@@ -74,37 +76,30 @@ function DistributorViewOrders() {
             setModalIsOpenToTrue(index);
         }
 
-        function handleVendorShipping() { //TODO: impl
+        function handleCustomerPurchase() { //TODO: impl
             setModalIsOpenToTrue(index)
         }
 
-        if (status === "2") {
+        if (status === "4") {
             return handleAcknowledgeShipment;
-        } else if (status === "3") {
-            return handleVendorShipping;
+        } else if (status === "5") {
+            return handleCustomerPurchase;
         }
     }
 
     function getClassName(status) {
-        if (status === "2") {
+        if (status === "4") {
             return "btn btn-primary btn-sm";
-        } else if (status === "3") {
-            return "btn btn-success btn-sm";
+        } else if (status === "5") {
+            return "btn btn-warning btn-sm";
+        } else {
+            return "btn btn-success btn-sm"
         }
-
-    }
-
-    async function receiveAsDistributor(productUUID) {
-        productUUID = prompt("enter product id");
-        let response = await localContract.methods
-            .recieveAsDistributor(productUUID)
-            .send({from: distributorId});
-
     }
 
     return (
         <>
-            <h1>View Distributor's orders</h1>
+            <h1>View Vendor's orders</h1>
             <br/>
             <Table class="table">
                 <thead class="thead-dark">
@@ -125,7 +120,7 @@ function DistributorViewOrders() {
                             <td>{item.desc}</td>
 
                             {modalIsOpen && index === stateIndex &&
-                                <DistributorChangeProductStatus
+                                <VendorChangeProductStatus
                                     currentState={item.currentStatus}
                                     productID={item.productID}
                                     parentCallback={setModalIsOpenToFalse}
@@ -140,11 +135,8 @@ function DistributorViewOrders() {
                 }
                 </tbody>
             </Table>
-            <Button className="w-100 mt-3" onClick={receiveAsDistributor}>
-                Receive as Distributor</Button>
-
         </>
     );
 }
 
-export default DistributorViewOrders;
+export default VendorViewOrders;

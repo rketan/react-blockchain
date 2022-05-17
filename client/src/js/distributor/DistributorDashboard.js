@@ -16,11 +16,6 @@ function DistributorDashboard() {
             <div className="inner2">
 
                 <Button className="upload-file-btn"
-                        style={{position: "fixed", left: "500px", top: "150px"}}
-                        onClick={() => navigate("/distributor/change-product-status")}>Change Product status
-                </Button>
-
-                <Button className="upload-file-btn"
                         style={{position: "fixed", left: "800px", top: "150px"}}
                         onClick={() => navigate("/distributor/view-current-orders")}>View current orders
                 </Button>
