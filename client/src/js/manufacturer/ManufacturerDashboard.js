@@ -25,15 +25,15 @@ function ManufacturerDashboard() {
                     onClick={() => navigate("/manufacturer/add-product")}>Add Product
                 </Button>
 
-                <Button className="upload-file-btn"
-                    style={{ position: "fixed", left: "1100px", top: "150px" }}
-                    onClick={() => navigate("/manufacturer/change-product-status")}>Change Product status
-                </Button>
+                {/*<Button className="upload-file-btn"*/}
+                {/*    style={{ position: "fixed", left: "1100px", top: "150px" }}*/}
+                {/*    onClick={() => navigate("/manufacturer/change-product-status")}>Change Product status*/}
+                {/*</Button>*/}
 
-                <Button className="upload-file-btn"
-                    style={{ position: "fixed", left: "1400px", top: "150px" }}
-                    onClick={() => navigate("/manufacturer/view-current-orders")}>View current orders
-                </Button>
+                {/*<Button className="upload-file-btn"*/}
+                {/*    style={{ position: "fixed", left: "1400px", top: "150px" }}*/}
+                {/*    onClick={() => navigate("/manufacturer/view-current-orders")}>View current orders*/}
+                {/*</Button>*/}
 
             </div>
         </>

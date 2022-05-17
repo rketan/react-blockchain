@@ -1,11 +1,15 @@
 import React, {useContext, useState} from "react";
 import {AppContext} from '../App'
 import {Button, Modal} from 'react-bootstrap';
+import StateEnum from "../StateEnum";
 
 function DistributorChangeProductStatus(props) {
     const [stateValue, setStateValue] = useState(0);
     const [nextValue, setNextValue] = useState(0);
     const [productID, setProductID] = useState(0);
+
+    const [vendorId, setVendorId] = useState(null);
+
 
     const {web3, contract, accountId} = useContext(AppContext);
     const [localContract, setLocalContract] = contract;
@@ -20,6 +24,10 @@ function DistributorChangeProductStatus(props) {
         setProductID(parseInt(props.productID))
     }, []);
 
+    const handleStateUpdate = () => {
+        setStateValue(props.currentState)
+    }
+
     async function callback() { //TODO: graceful open, close on success/failure/close button of modal
         // Declare and Initialize a variable for event
         let eventEmitted = false;
@@ -33,22 +41,14 @@ function DistributorChangeProductStatus(props) {
         if (localContract.methods !== undefined) {
             const accounts = await localWeb3.eth.getAccounts();
             if (stateValue === 2) {
-                console.log("rketan: place order")
-                let p1 = await localContract.methods.products(1).call();
-                console.log("rketan: p1 state", p1.currentStatus)
-                console.log("rketan: accid", acc)
 
                 if (props.productID !== undefined) {
-                    let event = await localContract.methods.recieveAsDistributor(props.productID).send({from: accounts[0]});
-                    console.log("rketan: response", event)
+                    await localContract.methods.recieveAsDistributor(props.productID).send({from: accounts[0]});
                 }
 
-                let p2 = await localContract.methods.products(1).call();
-                console.log("rketan: p2 state", p2.currentStatus)
 
             } else if (stateValue === 3) {
-                console.log("rketan: ship to vendor") //TOdO: prompt for vendor id
-                const response1 = await localContract.methods.shipToVendor(props.productID, "0x128C691a6A26848E4A7Ed5EbcbC480f55B611Ba8").send({from: accounts[0]});
+                await localContract.methods.shipToVendor(props.productID, vendorId).send({from: accounts[0]});
             }
         }
         props.parentCallback()
@@ -57,20 +57,39 @@ function DistributorChangeProductStatus(props) {
     return (
         <>
             <Modal style={{backgroundColor: 'rgb(0, 0, 0, 0.5) !important'}}
-                   show={true} onHide={props.parentCallback} centered>
+                   show={true}
+                   onEnter={handleStateUpdate}
+                   onHide={props.parentCallback}
+                   centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>Update State Dialog</Modal.Title>
+                    <Modal.Title>
+                        <div style={{marginLeft: '120px'}}>
+                            Update State Dialog
+                        </div>
+                    </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div>
-                        Current State : {stateValue}
+                        Current State : {StateEnum[stateValue]}
                         <br></br>
-                        Next State: {nextValue}
+                        Next State: {StateEnum[nextValue]}
                         {/*//TODO: replace with enum*/}
                         <br></br>
                         Product ID: {props.productID}
                         <br></br>
-                        Index: {props.index}
+
+                        {stateValue === 3 &&
+                            <div style={{marginTop: '5%'}}>
+                                <h5> Enter Vendor ID to ship to the vendor </h5>
+                                <input
+                                    style={{width: '100%', lineHeight: '40px'}}
+                                    type="text"
+                                    value={vendorId}
+                                    placeholder="Vendor ID"
+                                    onChange={e => setVendorId(e.target.value)}
+                                />
+                            </div>
+                        }
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
