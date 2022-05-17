@@ -6,11 +6,12 @@ import "./accessControl/VendorRole.sol";
 import "./core/Ownable.sol";
 
 contract ProductTracking is
-Ownable,
-ManufacturerRole,
-DistributorRole,
-VendorRole
+    Ownable,
+    ManufacturerRole,
+    DistributorRole,
+    VendorRole
 {
+    // Model a Product
     struct Product {
         uint256 sku;
         uint256 productID;
@@ -23,13 +24,16 @@ VendorRole
         address payable vendorID;
     }
 
-    //TODO: Track the journey
+    // Track the journey
     mapping(uint256 => string[]) productsHistory;
 
+    // Read/write products
     mapping(uint256 => Product) public products;
 
+    // Store Products Count
     uint256 public productsCount;
 
+    // Define enum 'State' with the following values:
     enum State {
         Manufactured, // 0
         OrderPlaced, // 1
@@ -40,8 +44,9 @@ VendorRole
         Purchased // 6
     }
 
-    State constant defaultState = State.OrderPlaced;
+    State constant defaultState = State.Manufactured;
 
+    // Define 7 events with the same 8 state values and accept 'upc' as input argument
     event Manufactured(uint256 upc);
     event OrderPlaced(uint256 upc);
     event Shipped(uint256 upc);
@@ -54,27 +59,16 @@ VendorRole
         //TODO
     }
 
-
-    function getRole(address payable _address) public view returns (string memory) {
-        if (super.isManufacturer(_address)) {
-            return "manufacturer";
-        } else if (super.isVendor(_address)) {
-            return "vendor";
-        } else if (super.isDistributor(_address)) {
-            return "distributor";
-        }
-        return "";
-
-    }
-
+    // Define a modifer that verifies the Caller
     modifier verifyCaller(address payable _address) {
         require(
             msg.sender == _address,
             "This account is not the owner of this item"
-        );
+        ); //NEW CHANGE. address is now address payable, and msg.sender is casted as payable
         _;
     }
 
+    // Define a modifier that checks if an item.state of a upc is Manufactured
     modifier manufactured(uint256 _upc) {
         require(
             products[_upc].currentStatus == State.Manufactured,
@@ -83,6 +77,7 @@ VendorRole
         _;
     }
 
+    // Define a modifier that checks if an item.state of a upc is OrderPlaced
     modifier orderPlaced(uint256 _upc) {
         require(
             products[_upc].currentStatus == State.OrderPlaced,
@@ -91,6 +86,7 @@ VendorRole
         _;
     }
 
+    // Define a modifier that checks if an item.state of a upc is Shipped
     modifier shipped(uint256 _upc) {
         require(
             products[_upc].currentStatus == State.Shipped,
@@ -99,6 +95,7 @@ VendorRole
         _;
     }
 
+    // Define a modifier that checks if an item.state of a upc is DistRecieved
     modifier distRecieved(uint256 _upc) {
         require(
             products[_upc].currentStatus == State.DistRecieved,
@@ -107,6 +104,7 @@ VendorRole
         _;
     }
 
+    // Define a modifier that checks if an item.state of a upc is InTransit
     modifier inTransit(uint256 _upc) {
         require(
             products[_upc].currentStatus == State.InTransit,
@@ -115,6 +113,7 @@ VendorRole
         _;
     }
 
+    // Define a modifier that checks if an item.state of a upc is VendorRecieved
     modifier vendorRecieved(uint256 _upc) {
         require(
             products[_upc].currentStatus == State.VendorRecieved,
@@ -123,6 +122,7 @@ VendorRole
         _;
     }
 
+    // Define a modifier that checks if an item.state of a upc is Purchased
     modifier purchased(uint256 _upc) {
         require(
             products[_upc].currentStatus == State.Purchased,
@@ -131,6 +131,7 @@ VendorRole
         _;
     }
 
+    // Define a function 'manufactureProduct' that allows a manufacturer to mark an item 'Manufactured'
     function manufactureProduct(
         uint256 _upc,
         string memory name,
@@ -138,10 +139,10 @@ VendorRole
         string memory desc,
         address payable _originManufacturerID
     ) public onlyManufacturer {
+        // Add the new item as part of Harvest
         Product memory newItem;
         newItem.ownerID = _originManufacturerID;
-        newItem.manufacturerID = _originManufacturerID;
-        //NEW ADDITION
+        newItem.manufacturerID = _originManufacturerID; //NEW ADDITION
         newItem.productID = _upc;
         newItem.name = name;
         newItem.sku = _sku;
@@ -149,65 +150,103 @@ VendorRole
 
         productsCount = productsCount + 1;
 
-        newItem.currentStatus = defaultState;
+        // Setting state
+        newItem.currentStatus = State.Manufactured; //NEW CHANGE. Used to be State.Shipped
+
+        // Adding new Item to map
         products[_upc] = newItem;
+
+        // Emit the appropriate event
         emit Manufactured(_upc);
     }
 
+    // Define a function 'placeOrder' that allows the manufacturer to mark an item 'OrderPlaced'
     function placeOrder(uint256 _upc)
-    public
-    onlyManufacturer
-    manufactured(_upc)
-    verifyCaller(products[_upc].manufacturerID)
+        public
+        onlyManufacturer
+        manufactured(_upc)
+        verifyCaller(products[_upc].manufacturerID)
     {
+        //Retrieve product
         Product storage existingItem = products[_upc];
+        //Update state
         existingItem.currentStatus = State.OrderPlaced;
+        // Emit the appropriate event
         emit OrderPlaced(_upc);
     }
 
-    function shipToDistributor(uint256 _upc, address payable distID) public
-    onlyManufacturer orderPlaced(_upc) verifyCaller(products[_upc].manufacturerID)
+    // Define a function 'shipToDistributor' that allows the manufacturer to mark an item 'Shipped'
+    function shipToDistributor(uint256 _upc, address payable distID)
+        public
+        onlyManufacturer
+        orderPlaced(_upc)
+        verifyCaller(products[_upc].manufacturerID)
     {
+        //Retrieve product
         Product storage existingItem = products[_upc];
+        //Update state
         existingItem.currentStatus = State.Shipped;
+
         existingItem.distributorID = distID;
+        // Emit the appropriate event
         emit Shipped(_upc);
     }
 
-    function recieveAsDistributor(uint256 _upc) public onlyDistributor shipped(_upc)
+    // Define a function 'recieveAsDistributor' that allows a disributor to mark an item 'DistRecieved'
+    function recieveAsDistributor(uint256 _upc)
+        public
+        onlyDistributor
+        shipped(_upc)
     {
+        //Retrieve product and update new owner
         Product storage existingItem = products[_upc];
         existingItem.ownerID = msg.sender;
         existingItem.distributorID = msg.sender;
+        //Update state
         existingItem.currentStatus = State.DistRecieved;
+        // emit the appropriate event
         emit DistRecieved(_upc);
     }
 
-    function shipToVendor(uint256 _upc, address payable vendorId) public onlyDistributor distRecieved(_upc)
-    verifyCaller(products[_upc].distributorID)
+    // Define a function 'shipToVendor' that allows the distributor to mark an item 'InTransit'
+    function shipToVendor(uint256 _upc)
+        public
+        onlyDistributor
+        distRecieved(_upc)
+        verifyCaller(products[_upc].distributorID)
     {
+        //Retrieve product
         Product storage existingItem = products[_upc];
+        //Update state
         existingItem.currentStatus = State.InTransit;
-        existingItem.vendorID = vendorId;
+        // Emit the appropriate event
         emit InTransit(_upc);
     }
 
+    // Define a function 'recieveAsVendor' that allows a disributor to mark an item 'VendorRecieved'
     function recieveAsVendor(uint256 _upc) public onlyVendor inTransit(_upc) {
+        //Retrieve product and update new owner
         Product storage existingItem = products[_upc];
         existingItem.ownerID = msg.sender;
         existingItem.vendorID = msg.sender;
+        //Update state
         existingItem.currentStatus = State.VendorRecieved;
+        // emit the appropriate event
         emit VendorRecieved(_upc);
     }
 
+    // Define a function 'shipToVendor' that allows the distributor to mark an item 'Purchased'
     function sellProduct(uint256 _upc)
-    public
-    onlyVendor
-    vendorRecieved(_upc)
-    verifyCaller(products[_upc].vendorID)
+        public
+        onlyVendor
+        vendorRecieved(_upc)
+        verifyCaller(products[_upc].vendorID)
     {
+        //Retrieve product
         Product storage existingItem = products[_upc];
+        //Update state
         existingItem.currentStatus = State.Purchased;
+        // Emit the appropriate event
         emit Purchased(_upc);
     }
     //IMPORTANT, can add 'address payable customerName' to parameters and then set owner id to that of customerName. I didn't do it, because I didn't find it important for the item's history.

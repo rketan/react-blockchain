@@ -1,17 +1,23 @@
-import React, {useContext, useState} from "react";
-import {AppContext} from '../App'
-import {Button, Card, Form} from 'react-bootstrap'
+import React, { useContext, useState } from "react";
+import { AppContext } from '../App'
+import {Form, Button, Card} from 'react-bootstrap'
 
 function AddProduct() {
-    const {web3, contract, accountId} = useContext(AppContext);
+    const { web3, contract, accountId } = useContext(AppContext);
     const [localContract, setLocalContract] = contract;
     const [account, setAccount] = accountId;
 
     const addProduct = async () => {
         if (localContract !== undefined && localContract.methods !== undefined) {
             let response = await localContract.methods
-                .manufactureProduct(productUUID, productName, productSKU, productDesc, account)
-                .send({from: account});
+                            .manufactureProduct(productUUID, productName, productSKU, productDesc, account)
+                            .send({ from: account });
+            
+            // clear form
+            setProductName("");
+            setProductUUID("");
+            setProductSKU("");
+            setProductDesc("");
         }
     };
 
@@ -24,14 +30,6 @@ function AddProduct() {
     function handleSubmit(event) {
         event.preventDefault();
         addProduct().catch(console.error);
-    }
-
-    async function shipToDistributor(productUUID) {
-        productUUID = prompt("enter product id");
-        let response = await localContract.methods
-            .shipToDistributor(productUUID, "0xd6a261C8A16D96fFab1c79EB8Eec04a4c033a2b3")
-            .send({from: account});
-
     }
 
 
@@ -71,7 +69,7 @@ function AddProduct() {
                             autoFocus
                             type="text"
                             value={productSKU}
-                            onChange={(e) => setProductSKU(e.target.value)}/>
+                            onChange={(e) => setProductSKU(e.target.value)} />
                     </Form.Group>
 
                     <Form.Group id="product-desc">
@@ -84,14 +82,9 @@ function AddProduct() {
                             onChange={(e) => setProductDesc(e.target.value)}
                         />
                     </Form.Group>
-                    <Button className="w-100 mt-3" type="submit">Submit New Product</Button>
+                    <Button className="w-100 mt-3" type="submit" >Submit New Product</Button>
                 </Form>
-
-
             </Card.Body>
-
-            <Button className="w-100 mt-3" onClick={shipToDistributor}>
-                Ship To Distributor</Button>
         </Card>
     </>);
 }
