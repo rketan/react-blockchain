@@ -59,6 +59,19 @@ contract ProductTracking is
         //TODO
     }
 
+
+    function getRole(address payable _address) public view returns (string memory) {
+        if (super.isManufacturer(_address)) {
+            return "manufacturer";
+        } else if (super.isVendor(_address)) {
+            return "vendor";
+        } else if (super.isDistributor(_address)) {
+            return "distributor";
+        }
+        return "";
+
+    }
+
     // Define a modifer that verifies the Caller
     modifier verifyCaller(address payable _address) {
         require(

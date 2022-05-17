@@ -1,11 +1,11 @@
-import React, { useState, useContext } from "react";
+import React, {useContext, useState} from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import "../css/Login.css";
-import { useNavigate } from "react-router";
-import { AppContext } from './App'
+import {useNavigate} from "react-router";
+import {AppContext} from './App'
 
-function LandingPage() {
+function SignUp() {
     const { web3, contract, accountId } = useContext(AppContext);
     const [localWeb3, setLocalWeb3] = web3;
     const [localContract, setLocalContract] = contract;
@@ -13,13 +13,13 @@ function LandingPage() {
 
     React.useEffect(() => {
         const fetchAccounts = async () => {
-            if (localWeb3 !== undefined || localWeb3 !== null) {
+            if (localWeb3 !== undefined) {
                 // Use web3 to get the user's accounts.
-                //const accounts = await localWeb3.eth.getAccounts();
+                return await localWeb3.eth.getAccounts();
             }
 
         };
-        fetchAccounts().catch(console.error);
+        fetchAccounts().then(console.log).catch(console.error);
     }, []);
 
 
@@ -38,33 +38,54 @@ function LandingPage() {
         return userName.length > 0 && userType.length > 0 && userEthereumId;
     }
 
-    async function assignRole(ethId) {
+    async function assignRole(ethId, role) {
         // Get manufacturer list and check if this account is assigned the correct role
+        console.log(String(ethId).concat(" ::: ", String(role)));
+        console.log(await localContract.methods.getRole(userEthereumId).call());
         if (localContract !== undefined || localContract.methods !== undefined) {
-            const isManufacturer = await localContract.methods.isManufacturer(ethId).call();
-            if (!isManufacturer) {
-                // assign manufacturer role to this account
-                const assignMan = await localContract.methods.addManufacturer(ethId).send({from: ethId});
+            if (role === MANUFACTURER) {
+                const isManufacturer = await localContract.methods.isManufacturer(ethId).call();
+                if (!isManufacturer) {
+                    await localContract.methods.addManufacturer(ethId).send({from: ethId});
+                }
+                console.log(await localContract.methods.isManufacturer(ethId).call());
+            } else if (role === DISTRIBUTOR) {
+                const isDistributor = await localContract.methods.isDistributor(ethId).call();
+                if (!isDistributor) {
+                    await localContract.methods.addDistributor(ethId).send({from: ethId});
+                }
+                console.log(await localContract.methods.isDistributor(ethId).call());
+
+            } else if (role === VENDOR) {
+                const isDistributor = await localContract.methods.isVendor(ethId).call();
+                if (!isDistributor) {
+                    const assignMan = await localContract.methods.addVendor(ethId).send({from: ethId});
+                }
+            } else {
+                alert("error, invalid role")
             }
         }
+        console.log(await localContract.methods.getRole(userEthereumId).call());
     }
 
     function handleSubmit(event) {
         event.preventDefault();
+        setAccount(userEthereumId);
         switch (userType) {
             case VENDOR:
-                navigate("/vendor", { state: { "userName": userName } });
+                assignRole(userEthereumId, VENDOR);
+                navigate("/vendor", {state: {"userName": userName}});
                 break;
             case MANUFACTURER:
-                assignRole(userEthereumId);
-                setAccount(userEthereumId);
-                navigate("/manufacturer", { state: { "userName": userName } });
+                assignRole(userEthereumId, MANUFACTURER);
+                navigate("/manufacturer", {state: {"userName": userName}});
                 break;
             case DISTRIBUTOR:
-                navigate("/distributor", { state: { "userName": userName } });
+                assignRole(userEthereumId, DISTRIBUTOR);
+                navigate("/distributor", {state: {"userName": userName}});
                 break;
             case CUSTOMER:
-                navigate("/customer", { state: { "userName": userName } });
+                navigate("/customer", {state: {"userName": userName}});
                 break;
             default:
                 console.log("Invalid user type");
@@ -97,7 +118,7 @@ function LandingPage() {
                 <Form.Group size="lg" controlId="user-type">
                     <Form.Label>User Type</Form.Label>
                     <Form.Select aria-label="Default select example" value={userType}
-                        onChange={(e) => setUserType(e.target.value)}>
+                                 onChange={(e) => setUserType(e.target.value)}>
                         <option>User type</option>
                         <option value="vendor">Vendor</option>
                         <option value="manufacturer">Manufacturer</option>
@@ -113,4 +134,4 @@ function LandingPage() {
     );
 }
 
-export default LandingPage;
+export default SignUp;

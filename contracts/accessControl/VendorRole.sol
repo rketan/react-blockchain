@@ -33,7 +33,7 @@ contract VendorRole {
   }
 
   // Define a function 'addVendor' that adds this role
-  function addVendor(address account) public onlyVendor {
+  function addVendor(address account) public {
       _addVendor(account);
   }
 

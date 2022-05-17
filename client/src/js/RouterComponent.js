@@ -5,10 +5,13 @@ import ViewOrders from "./manufacturer/ViewOrders";
 import ChangeProductStatus from "./manufacturer/ChangeStatus";
 import AddProduct from "./manufacturer/AddProducts";
 import ManufacturerDashboard from "./manufacturer/ManufacturerDashboard";
-import LandingPage from "./LandingPage";
+import SignUp from "./SignUp";
+import Login from "./Login";
 import DistributorDashboard from "./distributor/DistributorDashboard";
 import VendorDashboard from "./vendor/VendorDashboard";
 import CustomerDashboard from "./customer/CustomerDashboard";
+import DistributorChangeProductStatus from "./distributor/ChangeProductStatus";
+import DistributorViewOrders from "./distributor/ViewOrders";
 
 export default function router() {
     return (
@@ -16,7 +19,8 @@ export default function router() {
         <Routes>
             {/*TODO: Add nested routes in nested files*/}
 
-            <Route exact path="/" element={<LandingPage/>}/>
+            <Route exact path="/" element={<Login/>}/>
+            <Route path="/signup" element={<SignUp/>}/>}
 
             <Route path="/manufacturer" element={<ManufacturerDashboard/>}/>
             <Route path="/manufacturer/view-products" element={<ViewProducts/>}/>
@@ -26,6 +30,9 @@ export default function router() {
 
 
             <Route path="/distributor" element={<DistributorDashboard/>}/>
+            <Route path="/distributor/change-product-status" element={<DistributorChangeProductStatus/>}/>
+            <Route path="/distributor/view-current-orders" element={<DistributorViewOrders/>}/>
+
             {/*TODO: Add Distributor nested paths*/}
 
             <Route path="/vendor" element={<VendorDashboard/>}/>
