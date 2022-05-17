@@ -39,9 +39,7 @@ function SignUp() {
     }
 
     async function assignRole(ethId, role) {
-        // Get manufacturer list and check if this account is assigned the correct role
-        console.log(String(ethId).concat(" ::: ", String(role)));
-        console.log(await localContract.methods.getRole(userEthereumId).call());
+
         if (localContract !== undefined || localContract.methods !== undefined) {
             if (role === MANUFACTURER) {
                 const isManufacturer = await localContract.methods.isManufacturer(ethId).call();
@@ -57,8 +55,8 @@ function SignUp() {
                 console.log(await localContract.methods.isDistributor(ethId).call());
 
             } else if (role === VENDOR) {
-                const isDistributor = await localContract.methods.isVendor(ethId).call();
-                if (!isDistributor) {
+                const isVendor = await localContract.methods.isVendor(ethId).call();
+                if (!isVendor) {
                     const assignMan = await localContract.methods.addVendor(ethId).send({from: ethId});
                 }
             } else {
@@ -93,8 +91,8 @@ function SignUp() {
     }
 
     return (
-        <div className="Login">
-            <Form onSubmit={handleSubmit}>
+        <div className="Login" >
+            <Form onSubmit={handleSubmit} className="card p-4 bg-light">
                 <Form.Group size="lg" controlId="userName">
                     <Form.Label>User Name</Form.Label>
                     <Form.Control
@@ -126,8 +124,9 @@ function SignUp() {
                         <option value="customer">Customer</option>
                     </Form.Select>
                 </Form.Group>
-                <Button class="btn btn-primary" block size="lg" type="submit" disabled={!validateForm()}>
-                    Login
+                <br/>
+                <Button class="btn btn-primary" block size="lg"  type="submit" disabled={!validateForm()}>
+                    Sign up
                 </Button>
             </Form>
         </div>

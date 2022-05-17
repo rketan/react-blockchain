@@ -1,6 +1,8 @@
 import Table from "react-bootstrap/Table";
 import React, {useContext, useState} from "react";
 import {AppContext} from "../App";
+import {Modal, Button} from "react-bootstrap";
+import DistributorChangeProductStatus from './ChangeProductStatus';
 
 function DistributorViewOrders() {
 
@@ -8,7 +10,9 @@ function DistributorViewOrders() {
     const [localContract, setLocalContract] = contract;
     const [products, setProducts] = useState([]);
     const [distributorId, setDistributorId] = accountId;
-    const validProductStates = ["Shipped", "DistRecieved"];
+    const validProductStates = ["2", "3"];
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [stateIndex, setStateIndex] = useState(-1);
 
     React.useEffect(() => {
         const getProducts = async () => {
@@ -46,53 +50,91 @@ function DistributorViewOrders() {
     }
 
     function getButtonNameBasedOnStatus(status) {
-        if (status === "Shipped") {
+        if (status === "2") {
             return "Acknowledge Shipment";
-        } else if (status === "DistRecieved") {
+        } else if (status === "3") {
             return "Send to Vendor";
         }
     }
 
-    function handleAcknowledgeShipment() { //TODO: impl
-        alert("Acknowledge shipment");
+    const setModalIsOpenToTrue = (index) => {
+        setModalIsOpen(true)
+        setStateIndex(index)
     }
 
-    function handleVendorShipping() { //TODO: impl
-        alert("Ship To Vendor");
+    const setModalIsOpenToFalse = () => {
+        setModalIsOpen(false)
     }
 
-    function getOnClickHandler(status) {
-        if (status === "Shipped") {
+
+    function getOnClickHandler(status, index) {
+        var localIndex = index;
+
+        function handleAcknowledgeShipment() { //TODO: impl
+            alert("Acknowledge shipment" + localIndex);
+            setModalIsOpenToTrue(index);
+        }
+
+        function handleVendorShipping() { //TODO: impl
+            alert("Ship To Vendor" + localIndex);
+            setModalIsOpenToTrue(index)
+        }
+
+        if (status === "2") {
             return handleAcknowledgeShipment;
-        } else if (status === "DistRecieved") {
+        } else if (status === "3") {
             return handleVendorShipping;
         }
+    }
+
+    function getClassName(status) {
+        if (status === "2") {
+            return "btn btn-primary btn-sm";
+        } else if (status === "3") {
+            return "btn btn-success btn-sm";
+        }
+
+    }
+
+    async function receiveAsDistributor(productUUID) {
+        productUUID = prompt("enter product id");
+        let response = await localContract.methods
+            .recieveAsDistributor(productUUID)
+            .send({from: distributorId});
+
     }
 
     return (
         <>
             <h1>View products</h1>
             <br/>
-            <Table>
-                <thead>
+            <Table class="table">
+                <thead class="thead-dark">
                 <tr>
-                    <th>UUID</th>
-                    <th>SKU</th>
-                    <th>Product Name</th>
-                    <th>Product Description</th>
+                    <th scope="col">UUID</th>
+                    <th scope="col">SKU</th>
+                    <th scope="col">Product Name</th>
+                    <th scope="col">Product Description</th>
                 </tr>
                 </thead>
                 <tbody>
-                {products.map(item => {
+                {products.map((item, index) => {
                     return (
                         <tr>
                             <td>{item.productID}</td>
                             <td>{item.sku}</td>
                             <td>{item.name}</td>
                             <td>{item.desc}</td>
+
+                            {modalIsOpen && index === stateIndex &&
+                                <DistributorChangeProductStatus
+                                    currentState={item.currentStatus}
+                                    productID={item.productID}
+                                    parentCallback={setModalIsOpenToFalse}
+                                    index={index}/>}
                             <td>
-                                <button
-                                    onClick={getOnClickHandler(item.currentStatus)}>{getButtonNameBasedOnStatus(item.currentStatus)}</button>
+                                <button className={getClassName(item.currentStatus)}
+                                        onClick={getOnClickHandler(item.currentStatus, index)}>{getButtonNameBasedOnStatus(item.currentStatus)}</button>
                             </td>
                         </tr>
                     );
@@ -100,6 +142,9 @@ function DistributorViewOrders() {
                 }
                 </tbody>
             </Table>
+            <Button className="w-100 mt-3" onClick={receiveAsDistributor}>
+                Ship To Distributor</Button>
+
         </>
     );
 }

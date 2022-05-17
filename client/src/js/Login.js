@@ -64,7 +64,7 @@ function Login() {
         const fetchAccounts = async () => {
             if (localWeb3 !== undefined) {
                 // const accounts =  await localWeb3.eth.getAccounts();
-                const accounts =  await localWeb3.eth.requestAccounts();
+                const accounts = await localWeb3.eth.requestAccounts();
 
                 if (accounts[0] !== userEthereumId) {
                     throw new Error("User ethereum id not linked with metamask");
@@ -78,8 +78,9 @@ function Login() {
     return (
 
         <div className="Login">
-            <Form onSubmit={handleLogin}>
+            <Form onSubmit={handleLogin} className="card p-4 bg-light">
                 <Form.Group size="lg" controlId="userName">
+                    <h3 style={{color: "black", textAlign: "center", alignSelf: "center"}}>Login</h3>
                     <Form.Label>User Name</Form.Label>
                     <Form.Control
                         autoFocus
@@ -88,7 +89,7 @@ function Login() {
                         onChange={(e) => setUserName(e.target.value)}
                     />
                 </Form.Group>
-
+                <br/>
                 <Form.Group size="lg" controlId="user-ethereum-id">
                     <Form.Label>User Ethereum ID</Form.Label>
                     <Form.Control
@@ -98,20 +99,25 @@ function Login() {
                         onChange={(e) => setUserEthereumId(e.target.value)}
                     />
                 </Form.Group>
-                <Button class="btn btn-primary" block size="lg" type="submit" disabled={!validateForm()}>
+                <br/>
+                <Button class="btn btn-secondary" block size="lg" type="submit" disabled={!validateForm()}>
                     Login
                 </Button>
+                <br/>
+                <span style={{color: "black", textAlign: "center", alignSelf: "center"}}>
+                    &nbsp; &nbsp; &nbsp;New user? &nbsp;
+                    <Button class="btn btn-primary" block size="lg" style={{height: 44, width: 100, textAlign: "center", fontSize: 18}} onClick={() => navigate("/signup")}>
+                        Signup
+                    </Button>
+                </span>
+
+
             </Form>
             <br/>
 
-            <span>New user?
-                <Button class="btn btn-primary" block size="lg" onClick={() => navigate("/signup")}>
-                    Signup
-                </Button>
-            </span>
-
         </div>
-    );
+    )
+        ;
 }
 
 export default Login;
