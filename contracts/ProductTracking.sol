@@ -55,6 +55,29 @@ contract ProductTracking is
         //TODO
     }
 
+    //upon retrieval, check 2nd and 3rd to see if same as previous, if so, hasn't gone that far
+    function obtainHistory(uint256 _upc) public view returns (address payable[3] memory) {
+        Product storage existingItem = products[_upc];
+        if (existingItem.ownerID == existingItem.manufacturerID)
+            return [existingItem.manufacturerID, existingItem.manufacturerID, existingItem.manufacturerID];
+        else if (existingItem.ownerID == existingItem.distributorID)
+            return [existingItem.manufacturerID, existingItem.distributorID, existingItem.distributorID];
+        else
+            return [existingItem.manufacturerID, existingItem.distributorID, existingItem.vendorID];
+    }
+
+    function obtainHistory2(uint256 _upc) public view returns (address[4] memory) {
+        Product storage existingItem = products[_upc];
+        if (existingItem.ownerID == address(0))
+            return [address(0), address(0), address(0), address(0)];
+        else if (existingItem.ownerID == existingItem.manufacturerID)
+            return [existingItem.manufacturerID, address(0), address(0), address(0)];
+        else if (existingItem.ownerID == existingItem.distributorID)
+            return [existingItem.manufacturerID, existingItem.distributorID, address(0), address(0)];
+        else
+            return [existingItem.manufacturerID, existingItem.distributorID, existingItem.vendorID, address(0)];
+    }
+
 
     function getRole(address payable _address) public view returns (string memory) {
         if (super.isManufacturer(_address)) {
@@ -141,7 +164,7 @@ contract ProductTracking is
     ) public onlyManufacturer {
         Product memory newItem;
         newItem.ownerID = _originManufacturerID;
-        newItem.manufacturerID = _originManufacturerID; //NEW ADDITION
+        newItem.manufacturerID = _originManufacturerID;
         newItem.productID = _upc;
         newItem.name = name;
         newItem.sku = _sku;
