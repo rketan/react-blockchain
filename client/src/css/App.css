@@ -60,11 +60,6 @@
 .bg-image {
   background-size:100% 100%;
   background-repeat: no-repeat;
-  background-color: lightblue;
-  width: 100vw;
-  height: 100vh;
-  position: fixed;
-  background-position: 50% 50%;
   /* background-image: url("../static/img/bgimage.jpeg"); */
 }
 

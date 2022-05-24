@@ -1,6 +1,11 @@
 @media all and (min-width: 480px) {
     .Login {
         padding: 15%;
+        background-color: lightblue;
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        background-position: 50% 50%;
     }
 
     .Login form {
