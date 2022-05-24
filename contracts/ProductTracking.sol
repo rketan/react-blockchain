@@ -40,6 +40,8 @@ contract ProductTracking is
         Purchased // 6
     }
 
+    mapping(uint256 => mapping(State => uint256)) productStamp;
+
     State constant defaultState = State.Manufactured;
 
     // Define 7 events with the same 8 state values and accept 'upc' as input argument
@@ -137,7 +139,8 @@ contract ProductTracking is
         string memory name,
         uint256 _sku,
         string memory desc,
-        address payable _originManufacturerID
+        address payable _originManufacturerID,
+        uint256 time
     ) public onlyManufacturer {
         Product memory newItem;
         newItem.ownerID = _originManufacturerID;
@@ -151,11 +154,12 @@ contract ProductTracking is
 
         newItem.currentStatus = defaultState;
         products[_upc] = newItem;
+        productStamp[_upc][newItem.currentStatus] = time;
 
         emit Manufactured(_upc);
     }
 
-    function placeOrder(uint256 _upc)
+    function placeOrder(uint256 _upc, uint256 time)
         public
         onlyManufacturer
         manufactured(_upc)
@@ -163,10 +167,11 @@ contract ProductTracking is
     {
         Product storage existingItem = products[_upc];
         existingItem.currentStatus = State.OrderPlaced;
+        productStamp[_upc][existingItem.currentStatus] = time;
         emit OrderPlaced(_upc);
     }
 
-    function shipToDistributor(uint256 _upc, address payable distID)
+    function shipToDistributor(uint256 _upc, address payable distID, uint256 time)
         public
         onlyManufacturer
         orderPlaced(_upc)
@@ -176,10 +181,11 @@ contract ProductTracking is
         existingItem.currentStatus = State.Shipped;
 
         existingItem.distributorID = distID;
+        productStamp[_upc][existingItem.currentStatus] = time;
         emit Shipped(_upc);
     }
 
-    function recieveAsDistributor(uint256 _upc)
+    function recieveAsDistributor(uint256 _upc, uint256 time)
         public
         onlyDistributor
         shipped(_upc)
@@ -187,10 +193,11 @@ contract ProductTracking is
         Product storage existingItem = products[_upc];
         existingItem.ownerID = msg.sender;
         existingItem.currentStatus = State.DistRecieved;
+        productStamp[_upc][existingItem.currentStatus] = time;
         emit DistRecieved(_upc);
     }
 
-    function shipToVendor(uint256 _upc, address payable vendorId)
+    function shipToVendor(uint256 _upc, address payable vendorId, uint256 time)
     public onlyDistributor
     distRecieved(_upc)
     verifyCaller(products[_upc].distributorID)
@@ -198,17 +205,19 @@ contract ProductTracking is
         Product storage existingItem = products[_upc];
         existingItem.currentStatus = State.InTransit;
         existingItem.vendorID = vendorId;
+        productStamp[_upc][existingItem.currentStatus] = time;
         emit InTransit(_upc);
     }
 
-    function recieveAsVendor(uint256 _upc) public onlyVendor inTransit(_upc) {
+    function recieveAsVendor(uint256 _upc, uint256 time) public onlyVendor inTransit(_upc) {
         Product storage existingItem = products[_upc];
         existingItem.ownerID = msg.sender;
         existingItem.currentStatus = State.VendorRecieved;
+        productStamp[_upc][existingItem.currentStatus] = time;
         emit VendorRecieved(_upc);
     }
 
-    function sellProduct(uint256 _upc)
+    function sellProduct(uint256 _upc, uint256 time)
         public
         onlyVendor
         vendorRecieved(_upc)
@@ -216,6 +225,7 @@ contract ProductTracking is
     {
         Product storage existingItem = products[_upc];
         existingItem.currentStatus = State.Purchased;
+        productStamp[_upc][existingItem.currentStatus] = time;
         emit Purchased(_upc);
     }
     //IMPORTANT, can add 'address payable customerName' to parameters and then set owner id to that of customerName. I didn't do it, because I didn't find it important for the item's history.

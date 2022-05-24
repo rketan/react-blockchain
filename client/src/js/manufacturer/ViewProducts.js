@@ -72,6 +72,11 @@ function ViewProducts() {
         return StateEnum[productState];
     }
 
+    const setHistoryModalIsOpenToTrue = (index) => {
+        setModalIsOpen(true)
+        setStateIndex(index)
+    }
+
     const setModalIsOpenToTrue = (index) => {
         setModalIsOpen(true)
         setStateIndex(index)
@@ -154,6 +159,13 @@ function ViewProducts() {
                                             id={index}
                                             className={item.currentStatus == 2 ? "Update-State-Btn btn-secondary" : "Update-State-Btn btn-success"}
                                             onClick={() => setModalIsOpenToTrue(index)}> Update State
+                                        </Button>
+
+                                        <Button
+                                            disabled={item.currentStatus == 2}
+                                            id={index}
+                                            className={item.currentStatus == 2 ? "Update-State-Btn btn-secondary" : "Update-State-Btn btn-success"}
+                                            onClick={() => setHistoryModalIsOpenToTrue(index)}> View History
                                         </Button>
 
                                     </div>
