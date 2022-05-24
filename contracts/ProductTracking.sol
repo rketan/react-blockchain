@@ -25,6 +25,7 @@ contract ProductTracking is
 
     //TODO: Track the journey
     mapping(uint256 => string[]) productsHistory;
+    mapping(uint256 => mapping(string => uint256)) productStamp;
 
     mapping(uint256 => Product) public products;
 
@@ -39,8 +40,6 @@ contract ProductTracking is
         VendorRecieved, // 5
         Purchased // 6
     }
-
-    mapping(uint256 => mapping(State => uint256)) productStamp;
 
     State constant defaultState = State.Manufactured;
 
@@ -154,7 +153,7 @@ contract ProductTracking is
 
         newItem.currentStatus = defaultState;
         products[_upc] = newItem;
-        productStamp[_upc][newItem.currentStatus] = time;
+        productStamp[_upc]["Manufactured"] = time;
 
         emit Manufactured(_upc);
     }
@@ -167,7 +166,7 @@ contract ProductTracking is
     {
         Product storage existingItem = products[_upc];
         existingItem.currentStatus = State.OrderPlaced;
-        productStamp[_upc][existingItem.currentStatus] = time;
+        productStamp[_upc]["OrderPlaced"] = time;
         emit OrderPlaced(_upc);
     }
 
@@ -181,7 +180,7 @@ contract ProductTracking is
         existingItem.currentStatus = State.Shipped;
 
         existingItem.distributorID = distID;
-        productStamp[_upc][existingItem.currentStatus] = time;
+        productStamp[_upc]["Shipped"] = time;
         emit Shipped(_upc);
     }
 
@@ -193,7 +192,7 @@ contract ProductTracking is
         Product storage existingItem = products[_upc];
         existingItem.ownerID = msg.sender;
         existingItem.currentStatus = State.DistRecieved;
-        productStamp[_upc][existingItem.currentStatus] = time;
+        productStamp[_upc]["DistRecieved"] = time;
         emit DistRecieved(_upc);
     }
 
@@ -205,7 +204,7 @@ contract ProductTracking is
         Product storage existingItem = products[_upc];
         existingItem.currentStatus = State.InTransit;
         existingItem.vendorID = vendorId;
-        productStamp[_upc][existingItem.currentStatus] = time;
+        productStamp[_upc]["InTransit"] = time;
         emit InTransit(_upc);
     }
 
@@ -213,7 +212,7 @@ contract ProductTracking is
         Product storage existingItem = products[_upc];
         existingItem.ownerID = msg.sender;
         existingItem.currentStatus = State.VendorRecieved;
-        productStamp[_upc][existingItem.currentStatus] = time;
+        productStamp[_upc]["VendorRecieved"] = time;
         emit VendorRecieved(_upc);
     }
 
@@ -225,7 +224,7 @@ contract ProductTracking is
     {
         Product storage existingItem = products[_upc];
         existingItem.currentStatus = State.Purchased;
-        productStamp[_upc][existingItem.currentStatus] = time;
+        productStamp[_upc]["Purchased"] = time;
         emit Purchased(_upc);
     }
     //IMPORTANT, can add 'address payable customerName' to parameters and then set owner id to that of customerName. I didn't do it, because I didn't find it important for the item's history.
