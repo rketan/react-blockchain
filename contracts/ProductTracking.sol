@@ -157,9 +157,9 @@ contract ProductTracking is
 
     function placeOrder(uint256 _upc)
         public
-        onlyManufacturer
+//        onlyManufacturer
         manufactured(_upc)
-        verifyCaller(products[_upc].manufacturerID)
+//        verifyCaller(products[_upc].manufacturerID)
     {
         Product storage existingItem = products[_upc];
         existingItem.currentStatus = State.OrderPlaced;
