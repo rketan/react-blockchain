@@ -16,7 +16,7 @@ function AddProduct(props) {
 
         if (localContract !== undefined && localContract.methods !== undefined) {
             await localContract.methods
-                .manufactureProduct(productUUID, productName, productSKU, productDesc, account)
+                .manufactureProduct(productUUID, productName, productSKU, productDesc, account, Date.now())
                 .send({from: account});
 
             setProductName("");

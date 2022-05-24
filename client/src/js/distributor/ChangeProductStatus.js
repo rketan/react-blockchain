@@ -35,12 +35,12 @@ function DistributorChangeProductStatus(props) {
             if (stateValue === 2) {
 
                 if (props.productID !== undefined) {
-                    await localContract.methods.recieveAsDistributor(props.productID).send({from: accounts[0]});
+                    await localContract.methods.recieveAsDistributor(props.productID, Date.now()).send({from: accounts[0]});
                 }
 
 
             } else if (stateValue === 3) {
-                await localContract.methods.shipToVendor(props.productID, vendorId).send({from: accounts[0]});
+                await localContract.methods.shipToVendor(props.productID, vendorId, Date.now()).send({from: accounts[0]});
             }
         }
         props.parentCallback()
