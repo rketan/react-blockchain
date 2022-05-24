@@ -89,6 +89,7 @@ function ViewProducts() {
                         <th>Product Name</th>
                         <th>Product Description</th>
                         <th>Product State</th>
+                        <th>Manufacturer</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -105,6 +106,20 @@ function ViewProducts() {
                                     {modalIsOpen && index === stateIndex &&
                                         <ChangeStatus
                                         currentState={item.currentStatus}
+                                        productID={10}
+                                        parentCallback={setModalIsOpenToFalse}
+                                        index={index} />}
+
+                                    {<Button
+                                        id={index}
+                                        className="historybutton"
+                                        onClick={() => setModalIsOpenToTrue(index)}>
+                                        Show History
+                                    </Button>}
+
+                                    {modalIsOpen && index === stateIndex &&
+                                        <ChangeStatus
+                                        currentState={item.currentStatus}
                                         productID={item.productID}
                                         parentCallback={setModalIsOpenToFalse}
                                         index={index} />}
@@ -115,6 +130,7 @@ function ViewProducts() {
                                         onClick={() => setModalIsOpenToTrue(index)}>
                                         Update State
                                     </Button>}
+
                                 </tr>
                             </>
                         );

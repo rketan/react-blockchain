@@ -66,7 +66,7 @@ contract ProductTracking is
             return [existingItem.manufacturerID, existingItem.distributorID, existingItem.vendorID];
     }
 
-    function obtainHistory2(uint256 _upc) public view returns (address[4] memory) {
+    function obtainHistory2(uint256 _upc) public view returns (address payable[4] memory) {
         Product storage existingItem = products[_upc];
         if (existingItem.ownerID == address(0))
             return [address(0), address(0), address(0), address(0)];
