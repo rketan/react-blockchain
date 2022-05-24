@@ -100,17 +100,18 @@ function Login() {
                     />
                 </Form.Group>
                 <br/>
-                <Button class="btn btn-secondary" block size="lg" type="submit" disabled={!validateForm()}>
+                
+                <Button class="btn btn-secondary" size="lg" type="submit" disabled={!validateForm()}>
                     Login
                 </Button>
+                
                 <br/>
                 <span style={{color: "black", textAlign: "center", alignSelf: "center"}}>
                     &nbsp; &nbsp; &nbsp;New user? &nbsp;
-                    <Button class="btn btn-primary" block size="lg" style={{height: 44, width: 100, textAlign: "center", fontSize: 18}} onClick={() => navigate("/signup")}>
+                    <Button class="btn btn-primary" size="lg" style={{height: 44, width: 100, textAlign: "center", fontSize: 18}} onClick={() => navigate("/signup")}>
                         Signup
                     </Button>
                 </span>
-
 
             </Form>
             <br/>
