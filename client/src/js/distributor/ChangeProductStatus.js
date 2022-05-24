@@ -29,14 +29,6 @@ function DistributorChangeProductStatus(props) {
     }
 
     async function callback() { //TODO: graceful open, close on success/failure/close button of modal
-        // Declare and Initialize a variable for event
-        let eventEmitted = false;
-        // Watch the emitted event OrderPlaced()
-        localContract.events.OrderPlaced(() => {
-            eventEmitted = true;
-            console.log("rketan: WOHOOOO", eventEmitted)
-        });
-
         // update the state to the backend
         if (localContract.methods !== undefined) {
             const accounts = await localWeb3.eth.getAccounts();

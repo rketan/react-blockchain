@@ -1,8 +1,8 @@
 import React, {useContext, useState} from "react";
 import {AppContext} from '../App'
-import {Button, Card, Form} from 'react-bootstrap'
+import {Button, Form, Modal} from 'react-bootstrap'
 
-function AddProduct() {
+function AddProduct(props) {
     const {web3, contract, accountId} = useContext(AppContext);
     const [localContract, setLocalContract] = contract;
     const [account, setAccount] = accountId;
@@ -34,16 +34,23 @@ function AddProduct() {
 
     function handleSubmit(event) {
         event.preventDefault();
-        addProduct().catch(console.error);
+        addProduct().then(() => props.parentCallback()).catch(console.error);
     }
 
 
-    return (<>
-        <Card>
-            <Card.Body>
-                <h2 className="text-center mb-4">
-                    Add a Product
-                </h2>
+    return (
+    <>
+            <Modal style={{ backgroundColor: 'rgb(0, 0, 0, 0.5) !important' }}
+                show={true}
+                onHide={props.parentCallback} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>
+                        <div style={{marginLeft:'120px'}}> 
+                        Add Product Dialog 
+                        </div>
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
                 <Form onSubmit={handleSubmit}>
                     <Form.Group id="product-name">
                         <Form.Label>Product Name</Form.Label>
@@ -89,9 +96,17 @@ function AddProduct() {
                     </Form.Group>
                     <Button className="w-100 mt-3" type="submit">Submit New Product</Button>
                 </Form>
-            </Card.Body>
-        </Card>
-    </>);
+                </Modal.Body>
+                <Modal.Footer>
+                    {/* <Button variant="primary"
+                        onClick={() => callback()}>
+                        Save Changes
+                    </Button> */}
+                </Modal.Footer>
+            </Modal>
+
+        </>
+    );
 }
 
 export default AddProduct;

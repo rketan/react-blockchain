@@ -1,22 +1,48 @@
 import React, {useContext, useState} from "react";
 import {AppContext} from "../App";
-import Table from "react-bootstrap/Table";
 import VendorChangeProductStatus from "./ChangeProductStatus";
 import StateEnum from "../StateEnum";
+import {Row, Col, Button} from "react-bootstrap";
+import Card from 'react-bootstrap/Card'
+import boba from '../../static/img/uciboba.jpeg'
 
 function VendorViewOrders() {
 
     const {web3, contract, accountId} = useContext(AppContext);
+
+    const [localWeb3, setLocalWeb3] = web3;
     const [localContract, setLocalContract] = contract;
     const [products, setProducts] = useState([]);
-    const [distributorId, setDistributorId] = accountId;
+
+    const [vendorID, setVendorID] = accountId;
+
     const validProductStates = ["4", "5", "6"];
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [stateIndex, setStateIndex] = useState(-1);
     const[shouldRender, setShouldRender] = useState(false);
 
+    React.useEffect(() => {
+        const getProducts = async () => {
+            if(localWeb3 !== undefined && localWeb3.eth !== undefined) {
+                const accounts = await localWeb3.eth.getAccounts();
+                setVendorID(accounts[0]);
+            }
+
+            if (localContract !== undefined && localContract.methods !== undefined) {
+            let productsCount = await localContract.methods.productsCount().call();
+            getVendorProducts(productsCount)
+                .then(function (localProducts) {
+                    setProducts(localProducts);
+                });
+            }
+
+        };
+        setShouldRender(false);
+        getProducts().catch(console.error);
+    }, [shouldRender]);
+
     function isValidVendorProduct(product) {
-        return product.vendorID === accountId[0] && validProductStates.includes(product.currentStatus);
+        return product.vendorID === vendorID && validProductStates.includes(product.currentStatus);
     }
 
     async function getVendorProducts(productsCount) {
@@ -35,19 +61,6 @@ function VendorViewOrders() {
             resolve(loopThroughProducts());
         });
     }
-
-    React.useEffect(() => {
-        const getProducts = async () => {
-            let productsCount = await localContract.methods.productsCount().call();
-            getVendorProducts(productsCount)
-                .then(function (localProducts) {
-                    setProducts(localProducts);
-                });
-
-        };
-        setShouldRender(false);
-        getProducts().catch(console.error);
-    }, [shouldRender]);
 
     function getButtonNameBasedOnStatus(status) {
         if (status === "4") {
@@ -98,48 +111,72 @@ function VendorViewOrders() {
     }
 
     return (
-        <>
-            <h1>View Vendor's orders</h1>
-            <br/>
-            <Table class="table">
-                <thead class="thead-dark">
-                <tr>
-                    <th scope="col">UUID</th>
-                    <th scope="col">SKU</th>
-                    <th scope="col">Product Name</th>
-                    <th scope="col">Product Description</th>
-                    <th>Product State</th>
-                    <th>Take action</th>
-                </tr>
-                </thead>
-                <tbody>
-                {products.map((item, index) => {
-                    return (
-                        <tr>
-                            <td>{item.productID}</td>
-                            <td>{item.sku}</td>
-                            <td>{item.name}</td>
-                            <td>{item.desc}</td>
-                            <td>{StateEnum[item.currentStatus]}</td>
+        <div style={{marginTop: '20px'}}>
 
+<div style={{ minHeight: "390px", position: "relative", backgroundColor: "lightblue" }}>
+                <Button className="view-btn btn-success" onClick={() => setShouldRender(true)}>
+                    View Products
+                </Button>
+                <Button className="view-btn btn-primary" style={{ marginLeft: "100px" }}>
+                    Place Order
+                </Button>
+                <img src={boba}
+                    style={{ borderRadius: "50%", width: "250px", height: "250px", marginTop: "120px", marginLeft: "50px" }}>
+                </img>
+            </div>
 
-                            {modalIsOpen && index === stateIndex &&
-                                <VendorChangeProductStatus
-                                    currentState={item.currentStatus}
-                                    productID={item.productID}
-                                    parentCallback={setModalIsOpenToFalse}
-                                    index={index}/>}
-                            <td>
-                                <button className={getClassName(item.currentStatus)}
-                                        onClick={getOnClickHandler(item.currentStatus, index)}>{getButtonNameBasedOnStatus(item.currentStatus)}</button>
-                            </td>
-                        </tr>
-                    );
-                })
-                }
-                </tbody>
-            </Table>
-        </>
+<Row xs={2} md={4} className="g-4" style={{ marginTop: '20px', marginLeft: '40px' }}>
+                {products.map((item, index) => (
+                    <Col>
+                        <div style={{ marginTop: '20px' }}>
+                            <Card style={{ width: '20rem', height: '200px' }}>
+                                <Card.Body>
+                                    <Card.Title>{item.name}</Card.Title>
+                                    <Card.Subtitle className="mb-2 text-muted">
+                                        <b> UUID : </b> {item.productID}
+                                        <b style={{ marginLeft: '20px' }}> SKU : </b> {item.sku}
+                                    </Card.Subtitle>
+                                    <Card.Text>
+                                        <div>
+                                            <b>Description: </b> {item.desc} </div>
+                                        <div>
+                                            <b style={{ float: "left" }}>
+                                                Current State:
+                                            </b>
+
+                                            <b style={{
+                                                float: "right", backgroundColor: "lightblue",
+                                                width: "60%", textAlign: "center", fontSize: '18px'
+                                            }}>
+                                                {StateEnum[item.currentStatus]}
+                                            </b>
+
+                                        </div>
+                                    </Card.Text>
+
+                                    {modalIsOpen && index === stateIndex &&
+                                        <VendorChangeProductStatus
+                                            currentState={item.currentStatus}
+                                            productID={item.productID}
+                                            parentCallback={setModalIsOpenToFalse}
+                                            index={index} />}
+
+                                    <div style={{ marginRight: '10%', marginTop:'16%', marginLeft:'20%' }}>
+                                    <button className={getClassName(item.currentStatus)}
+                            onClick={getOnClickHandler(item.currentStatus, index)}>
+                                {getButtonNameBasedOnStatus(item.currentStatus)}
+                                </button>
+
+                                    </div>
+
+                                </Card.Body>
+                            </Card>
+                        </div>
+                    </Col>
+                ))}
+            </Row>
+            
+        </div>
     );
 }
 

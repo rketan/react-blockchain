@@ -7,7 +7,7 @@
   "sourceMap": "117:967:4:-;;132:2:-1;166:7;155:9;146:7;137:37;255:7;249:14;246:1;241:23;235:4;232:33;222:2;;269:9;222:2;293:9;290:1;283:20;323:4;314:7;306:22;347:7;338;331:24",
   "deployedSourceMap": "117:967:4:-;;;;;;;;",
   "source": "pragma solidity >=0.4.22 <0.9.0;\n\n/**\n * @title Roles\n * @dev Library for managing addresses assigned to a Role.\n */\nlibrary Roles {\n  struct Role {\n    mapping (address => bool) bearer;\n  }\n\n  /**\n   * @dev give an account access to this role\n   */\n  function add(Role storage role, address account) internal {\n    require(account != address(0), \"Address cannot be zero address\");\n    require(!has(role, account), \"This address already has this role\");\n    role.bearer[account] = true;\n  }\n\n  /**\n   * @dev remove an account's access to this role\n   */\n  function remove(Role storage role, address account) internal {\n    require(account != address(0), \"Address cannot be zero address\");\n    require(has(role, account), \"This address does not have this role yet\");\n\n    role.bearer[account] = false;\n  }\n\n  /**\n   * @dev check if an account has this role\n   * @return bool\n   */\n  function has(Role storage role, address account)\n    internal\n    view\n    returns (bool)\n  {\n    require(account != address(0), \"Address cannot be zero address\");\n    return role.bearer[account];\n  }\n}",
-  "sourcePath": "/mnt/c/asus-files/uci/quarter2/capstone/blockchain/react-blockchain/contracts/accessControl/Roles.sol",
+  "sourcePath": "/Users/rthakkar/blockchain/react-blockchain/contracts/accessControl/Roles.sol",
   "ast": {
     "absolutePath": "project:/contracts/accessControl/Roles.sol",
     "exportedSymbols": {
@@ -2876,7 +2876,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.7",
-  "updatedAt": "2022-05-17T21:10:05.089Z",
+  "updatedAt": "2022-05-18T01:50:59.455Z",
   "devdoc": {
     "details": "Library for managing addresses assigned to a Role.",
     "methods": {},

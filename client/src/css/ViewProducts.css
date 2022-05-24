@@ -18,9 +18,13 @@
 }
 
   .Update-State-Btn {
-    background-color: cornflowerblue !important;
+    /* background-color: cornflowerblue !important; */
     width: 50%;
     position: absolute;
+    margin-top: 10%;
+    margin-left: 12%;
+    position: inherit;
+    width: 100%;
   }
 
   .table {
@@ -38,5 +42,12 @@
     text-align: center;
     border: 1px solid black;
     padding: 5px;
+  }
+
+  .view-btn {
+    height: 80px;
+    width: 200px;
+    margin-top: 200px;
+    margin-left: 500px;
   }
 
