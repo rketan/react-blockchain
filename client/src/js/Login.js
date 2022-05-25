@@ -8,39 +8,49 @@ import {useNavigate} from "react-router";
 
 function Login() {
 
+    const NULL_USER = "0x0000000000000000000000000000000000000000";
     const VENDOR = "vendor";
     const MANUFACTURER = "manufacturer";
     const DISTRIBUTOR = "distributor";
     const CUSTOMER = "customer";
 
     const {web3, contract, accountId} = useContext(AppContext);
-    const [localWeb3, setLocalWeb3] = web3;
-    const [localAccount, setAccount] = accountId;
-    const [localContract, setLocalContract] = contract;
+    const localWeb3 = web3[0];
+    const setAccount = accountId[1];
+    const localContract = contract[0];
 
 
     const navigate = useNavigate();
     const [userName, setUserName] = useState("");
-    const [userEthereumId, setUserEthereumId] = useState("");
-
+    const [password, setPassword] = useState("");
 
     function validateForm() {
-        return userName.length > 0 && userEthereumId.length > 0;
+        return userName.length > 0 && password.length > 5;
     }
 
-    async function getUserType(accounts) {
+    async function getUserType(metamaskAccountId) {
 
-        const roleName = await localContract.methods.getRole(userEthereumId).call();
+        const userId = await localContract.methods.login(userName, password).call();
+        if (userId === NULL_USER) {
+            alert("User not exists/Invalid Password");
+            throw new Error("User not exists/Invalid Password");
+        }
+        if (userId !== metamaskAccountId) {
+            alert("User not signed up");
+            throw new Error("User ethereum id not linked with metamask");
+        }
+        const roleName = await localContract.methods.getRole(userId).call();
         console.log(roleName);
         if (roleName !== undefined && roleName !== '') {
+            setAccount(userId);
             return roleName;
         }
+        alert("User not signed up")
         throw new Error("User not exists");
     }
 
-    async function routeUser(userType) {
+    function routeUser(userType) {
         console.log(userType)
-        setAccount(userEthereumId);
         switch (userType) {
             case VENDOR:
                 navigate("/vendor", {state: {"userName": userName}});
@@ -55,7 +65,7 @@ function Login() {
                 navigate("/customer", {state: {"userName": userName}});
                 break;
             default:
-                console.log("Invalid user type");
+                console.log("Invalid user");
         }
     }
 
@@ -63,16 +73,12 @@ function Login() {
         event.preventDefault();
         const fetchAccounts = async () => {
             if (localWeb3 !== undefined) {
-                // const accounts =  await localWeb3.eth.getAccounts();
                 const accounts = await localWeb3.eth.requestAccounts();
-
-                if (accounts[0] !== userEthereumId) {
-                    throw new Error("User ethereum id not linked with metamask");
-                }
                 return accounts[0];
             }
         };
-        await fetchAccounts().then(getUserType).then(routeUser).catch(console.error);
+        let userType = await fetchAccounts().then(getUserType).catch(console.error);
+        routeUser(userType);
     }
 
     return (
@@ -90,13 +96,13 @@ function Login() {
                     />
                 </Form.Group>
                 <br/>
-                <Form.Group size="lg" controlId="user-ethereum-id">
-                    <Form.Label>User Ethereum ID</Form.Label>
+                <Form.Group size="lg" controlId="password">
+                    <Form.Label>Password</Form.Label>
                     <Form.Control
                         autoFocus
-                        type="text"
-                        value={userEthereumId}
-                        onChange={(e) => setUserEthereumId(e.target.value)}
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                     />
                 </Form.Group>
                 <br/>
@@ -106,7 +112,9 @@ function Login() {
                 <br/>
                 <span style={{color: "black", textAlign: "center", alignSelf: "center"}}>
                     &nbsp; &nbsp; &nbsp;New user? &nbsp;
-                    <Button class="btn btn-primary" block size="lg" style={{height: 44, width: 100, textAlign: "center", fontSize: 18}} onClick={() => navigate("/signup")}>
+                    <Button class="btn btn-primary" block size="lg"
+                            style={{height: 44, width: 100, textAlign: "center", fontSize: 18}}
+                            onClick={() => navigate("/signup")}>
                         Signup
                     </Button>
                 </span>

@@ -10,8 +10,8 @@ function VendorViewOrders() {
 
     const {web3, contract, accountId} = useContext(AppContext);
 
-    const [localWeb3, setLocalWeb3] = web3;
-    const [localContract, setLocalContract] = contract;
+    const localWeb3 = web3[0];
+    const localContract = contract[0];
     const [products, setProducts] = useState([]);
     const [purchaseEligibleProduct, setPurchaseEligibleProducts] = useState([]);
 
@@ -20,9 +20,8 @@ function VendorViewOrders() {
     const validProductStates = ["4", "5", "6"];
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [stateIndex, setStateIndex] = useState(-1);
-    const [shouldRender, setShouldRender] = useState(true);
-    const [renderViewOrders, setRenderViewOrders] = useState(false);
-    const [renderPlaceOrder, setRenderPlaceOrder] = useState(false);
+    const [shouldRenderViewOrders, setShouldRenderViewOrders] = useState(true);
+    const [shouldRenderPlaceOrder, setShouldRenderPlaceOrder] = useState(false);
 
 
     React.useEffect(() => {
@@ -41,13 +40,13 @@ function VendorViewOrders() {
             }
 
         };
-        if (shouldRender) {
-            setShouldRender(true);
+        if (shouldRenderViewOrders) {
+            setShouldRenderViewOrders(true);
         } else {
-            setShouldRender(false);
+            setShouldRenderViewOrders(false);
         }
         getProducts().catch(console.error);
-    }, [shouldRender]);
+    }, [shouldRenderViewOrders]);
 
 
     React.useEffect(() => {
@@ -66,13 +65,13 @@ function VendorViewOrders() {
             }
 
         }
-        if (renderPlaceOrder) {
-            setRenderPlaceOrder(true);
+        if (shouldRenderPlaceOrder) {
+            setShouldRenderPlaceOrder(true);
         } else {
-            setRenderPlaceOrder(false);
+            setShouldRenderPlaceOrder(false);
         }
         getProducts().catch(console.error);
-    }, [renderPlaceOrder]);
+    }, [shouldRenderPlaceOrder]);
 
     function isValidVendorProduct(product) {
         return product.vendorID === vendorID && validProductStates.includes(product.currentStatus);
@@ -118,7 +117,7 @@ function VendorViewOrders() {
 
     const setModalIsOpenToFalse = () => {
         setModalIsOpen(false);
-        setShouldRender(true);
+        setShouldRenderViewOrders(true);
     }
 
     function placeOrder(productId, manufacturerID) {
@@ -127,6 +126,8 @@ function VendorViewOrders() {
             console.log("placing order: " + productId + " " + manufacturerID);
             await localContract.methods.placeOrder(productId, Date.now()).send({from: vendorID});
             alert("Order Placed Successfully");
+            setShouldRenderViewOrders(false);
+            setShouldRenderPlaceOrder(true);
         }
 
         return placeOrderInternal;
@@ -164,16 +165,14 @@ function VendorViewOrders() {
 
             <div style={{minHeight: "390px", position: "relative", backgroundColor: "lightblue"}}>
                 <Button className="view-btn btn-success" onClick={() => {
-                    setShouldRender(true);
-                    setRenderViewOrders(true);
-                    setRenderPlaceOrder(false);
+                    setShouldRenderViewOrders(true);
+                    setShouldRenderPlaceOrder(false);
                 }}>
                     View Products
                 </Button>
                 <Button className="view-btn btn-primary" style={{marginLeft: "100px"}} onClick={() => {
-                    setShouldRender(false);
-                    setRenderViewOrders(false);
-                    setRenderPlaceOrder(true);
+                    setShouldRenderViewOrders(false);
+                    setShouldRenderPlaceOrder(true);
                 }}>
                     Place Order
                 </Button>
@@ -184,96 +183,96 @@ function VendorViewOrders() {
                          height: "250px",
                          marginTop: "120px",
                          marginLeft: "50px"
-                     }}>
+                     }} alt="ZotChain">
                 </img>
             </div>
 
 
-            {shouldRender && <Row xs={2} md={4} className="g-4" style={{marginTop: '20px', marginLeft: '40px'}}>
-                {products.map((item, index) => (
-                    <Col>
-                        <div style={{marginTop: '20px'}}>
-                            <Card style={{width: '20rem', height: '200px'}}>
-                                <Card.Body>
-                                    <Card.Title>{item.name}</Card.Title>
-                                    <Card.Subtitle className="mb-2 text-muted">
-                                        <b> UUID : </b> {item.productID}
-                                        <b style={{marginLeft: '20px'}}> SKU : </b> {item.sku}
-                                    </Card.Subtitle>
-                                    <Card.Text>
-                                        <div>
-                                            <b>Description: </b> {item.desc} </div>
-                                        <div>
-                                            <b style={{float: "left"}}>
-                                                Current State:
-                                            </b>
+            {shouldRenderViewOrders &&
+                <Row xs={2} md={4} className="g-4" style={{marginTop: '20px', marginLeft: '40px'}}>
+                    {products.map((item, index) => (
+                        <Col>
+                            <div style={{marginTop: '20px'}}>
+                                <Card style={{width: '20rem', height: '200px'}}>
+                                    <Card.Body>
+                                        <Card.Title>{item.name}</Card.Title>
+                                        <Card.Subtitle className="mb-2 text-muted">
+                                            <b> UUID : </b> {item.productID}
+                                            <b style={{marginLeft: '20px'}}> SKU : </b> {item.sku}
+                                        </Card.Subtitle>
+                                        <Card.Text>
+                                            <div>
+                                                <b>Description: </b> {item.desc} </div>
+                                            <div>
+                                                <b style={{float: "left"}}>
+                                                    Current State:
+                                                </b>
 
-                                            <b style={{
-                                                float: "right", backgroundColor: "lightblue",
-                                                width: "60%", textAlign: "center", fontSize: '18px'
-                                            }}>
-                                                {StateEnum[item.currentStatus]}
-                                            </b>
+                                                <b style={{
+                                                    float: "right", backgroundColor: "lightblue",
+                                                    width: "60%", textAlign: "center", fontSize: '18px'
+                                                }}>
+                                                    {StateEnum[item.currentStatus]}
+                                                </b>
 
-                                        </div>
-                                    </Card.Text>
+                                            </div>
+                                        </Card.Text>
 
-                                    {modalIsOpen && index === stateIndex &&
-                                        <VendorChangeProductStatus
-                                            currentState={item.currentStatus}
-                                            productID={item.productID}
-                                            parentCallback={setModalIsOpenToFalse}
-                                            index={index}/>}
+                                        {modalIsOpen && index === stateIndex &&
+                                            <VendorChangeProductStatus
+                                                currentState={item.currentStatus}
+                                                productID={item.productID}
+                                                parentCallback={setModalIsOpenToFalse}
+                                                index={index}/>}
 
-                                    <div style={{marginRight: '10%', marginTop: '16%', marginLeft: '20%'}}>
-                                        <button className={getClassName(item.currentStatus)}
-                                                onClick={getOnClickHandler(item.currentStatus, index)}>
-                                            {getButtonNameBasedOnStatus(item.currentStatus)}
-                                        </button>
-                                    </div>
-
-                                </Card.Body>
-                            </Card>
-                        </div>
-                    </Col>
-                ))}
-            </Row>}
-
-            {renderPlaceOrder && <Row xs={2} md={4} className="g-4" style={{marginTop: '20px', marginLeft: '40px'}}>
-                {purchaseEligibleProduct.map((item, index) => (
-                    <Col>
-                        <div style={{marginTop: '20px'}}>
-                            <Card style={{width: '20rem', height: '250px'}}>
-                                <Card.Body>
-                                    <Card.Title>{item.name}</Card.Title>
-                                    <Card.Subtitle className="mb-2 text-muted">
-                                        <b> UUID : </b> {item.productID}
-                                        <b style={{marginLeft: '20px'}}> SKU : </b> {item.sku}
-                                    </Card.Subtitle>
-                                    <Card.Text>
-                                        <div>
-                                            <b>Description: </b> {item.desc}
-                                        </div>
-                                        <div>
-                                            <b> Manufacturer Id : </b> {item.manufacturerID}
+                                        <div style={{marginRight: '10%', marginTop: '16%', marginLeft: '20%'}}>
+                                            <button className={getClassName(item.currentStatus)}
+                                                    onClick={getOnClickHandler(item.currentStatus, index)}>
+                                                {getButtonNameBasedOnStatus(item.currentStatus)}
+                                            </button>
                                         </div>
 
-                                    </Card.Text>
+                                    </Card.Body>
+                                </Card>
+                            </div>
+                        </Col>
+                    ))}
+                </Row>}
 
-                                    <div style={{marginRight: '10%', marginLeft: '20%'}}>
-                                        <button className="btn-success btn-lg"
-                                                onClick={placeOrder(item.productID, item.manufacturerID)}>
-                                            Place Order
-                                        </button>
-                                    </div>
+            {shouldRenderPlaceOrder &&
+                <Row xs={2} md={4} className="g-4" style={{marginTop: '20px', marginLeft: '40px'}}>
+                    {purchaseEligibleProduct.map(item => (
+                        <Col>
+                            <div style={{marginTop: '20px'}}>
+                                <Card style={{width: '20rem', height: '250px'}}>
+                                    <Card.Body>
+                                        <Card.Title>{item.name}</Card.Title>
+                                        <Card.Subtitle className="mb-2 text-muted">
+                                            <b> UUID : </b> {item.productID}
+                                            <b style={{marginLeft: '20px'}}> SKU : </b> {item.sku}
+                                        </Card.Subtitle>
+                                        <Card.Text>
+                                            <div>
+                                                <b>Description: </b> {item.desc}
+                                            </div>
+                                            <div>
+                                                <b> Manufacturer Id : </b> {item.manufacturerID}
+                                            </div>
+                                        </Card.Text>
 
-                                </Card.Body>
-                            </Card>
-                        </div>
-                    </Col>
-                ))}
-            </Row>}
+                                        <div style={{marginRight: '10%', marginLeft: '20%'}}>
+                                            <button className="btn-success btn-lg"
+                                                    onClick={placeOrder(item.productID, item.manufacturerID)}>
+                                                Place Order
+                                            </button>
+                                        </div>
 
+                                    </Card.Body>
+                                </Card>
+                            </div>
+                        </Col>
+                    ))}
+                </Row>}
         </div>
     );
 }

@@ -6,27 +6,17 @@ import {useNavigate} from "react-router";
 import {AppContext} from './App'
 
 function SignUp() {
-    const { web3, contract, accountId } = useContext(AppContext);
-    const [localWeb3, setLocalWeb3] = web3;
-    const [localContract, setLocalContract] = contract;
-    const [account, setAccount] = accountId;
-
-    React.useEffect(() => {
-        const fetchAccounts = async () => {
-            if (localWeb3 !== undefined) {
-                // Use web3 to get the user's accounts.
-                return await localWeb3.eth.getAccounts();
-            }
-
-        };
-        fetchAccounts().then(console.log).catch(console.error);
-    }, []);
-
+    const {web3, contract, accountId} = useContext(AppContext);
+    const localWeb3 = web3[0];
+    const localContract = contract[0];
+    const setAccount = accountId[1];
 
     const navigate = useNavigate();
     const [userName, setUserName] = useState("");
     const [userType, setUserType] = useState("");
     const [userEthereumId, setUserEthereumId] = useState("");
+    const [password, setPassword] = useState("");
+
 
     const VENDOR = "vendor";
     const MANUFACTURER = "manufacturer";
@@ -35,35 +25,61 @@ function SignUp() {
 
 
     function validateForm() {
-        return userName.length > 0 && userType.length > 0 && userEthereumId;
+        return userName.length > 0 && userType.length > 0 && userEthereumId.length > 0 && password.length > 5;
     }
 
-    async function assignRole(ethId, role) {
+    async function validateAccountIdSameAsMetamask(ethId) {
+        const fetchAccounts = async () => {
+            if (localWeb3 !== undefined) {
+                const accounts = await localWeb3.eth.requestAccounts();
+                return accounts[0];
+            }
+        };
+        await fetchAccounts().then(accId => {
+            if (accId !== ethId) {
+                alert("Please input the Ethereum id currently active with metamask");
+                throw new Error("Invalid user Ethereum Id");
+            }
+        })
+    }
 
+    async function assignRole(ethId, userName, password, role) {
+
+        await validateAccountIdSameAsMetamask(ethId);
         if (localContract !== undefined || localContract.methods !== undefined) {
             if (role === MANUFACTURER) {
                 const isManufacturer = await localContract.methods.isManufacturer(ethId).call();
+                console.log(isManufacturer);
+                console.log(await localContract.methods.isManufacturerViaName(userName).call());
+                console.log(await localContract.methods.isManufacturerViaName("xx").call())
+
                 if (!isManufacturer) {
-                    await localContract.methods.addManufacturer(ethId).send({from: ethId});
+                    await localContract.methods.addManufacturer(ethId, userName, password).send({from: ethId});
+                } else {
+                    alert("User already registered, please login");
+                    navigate("/login");
                 }
-                console.log(await localContract.methods.isManufacturer(ethId).call());
             } else if (role === DISTRIBUTOR) {
                 const isDistributor = await localContract.methods.isDistributor(ethId).call();
                 if (!isDistributor) {
-                    await localContract.methods.addDistributor(ethId).send({from: ethId});
+                    await localContract.methods.addDistributor(ethId, userName, password).send({from: ethId});
+                } else {
+                    alert("User already registered, please login");
+                    navigate("/login");
                 }
-                console.log(await localContract.methods.isDistributor(ethId).call());
 
             } else if (role === VENDOR) {
                 const isVendor = await localContract.methods.isVendor(ethId).call();
                 if (!isVendor) {
-                    const assignMan = await localContract.methods.addVendor(ethId).send({from: ethId});
+                    await localContract.methods.addVendor(ethId, userName, password).send({from: ethId});
+                } else {
+                    alert("User already registered, please login");
+                    navigate("/login");
                 }
             } else {
                 alert("error, invalid role")
             }
         }
-        console.log(await localContract.methods.getRole(userEthereumId).call());
     }
 
     function handleSubmit(event) {
@@ -71,15 +87,15 @@ function SignUp() {
         setAccount(userEthereumId);
         switch (userType) {
             case VENDOR:
-                assignRole(userEthereumId, VENDOR);
+                assignRole(userEthereumId, userName, password, VENDOR);
                 navigate("/vendor", {state: {"userName": userName}});
                 break;
             case MANUFACTURER:
-                assignRole(userEthereumId, MANUFACTURER);
+                assignRole(userEthereumId, userName, password, MANUFACTURER);
                 navigate("/manufacturer", {state: {"userName": userName}});
                 break;
             case DISTRIBUTOR:
-                assignRole(userEthereumId, DISTRIBUTOR);
+                assignRole(userEthereumId, userName, password, DISTRIBUTOR);
                 navigate("/distributor", {state: {"userName": userName}});
                 break;
             case CUSTOMER:
@@ -91,7 +107,7 @@ function SignUp() {
     }
 
     return (
-        <div className="Login" >
+        <div className="Login">
             <Form onSubmit={handleSubmit} className="card p-4 bg-light">
                 <Form.Group size="lg" controlId="userName">
                     <h3 style={{color: "black", textAlign: "center", alignSelf: "center"}}>Signup</h3>
@@ -114,6 +130,16 @@ function SignUp() {
                     />
                 </Form.Group>
 
+                <Form.Group size="lg" controlId="password">
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control
+                        autoFocus
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                </Form.Group>
+
                 <Form.Group size="lg" controlId="user-type">
                     <Form.Label>User Type</Form.Label>
                     <Form.Select aria-label="Default select example" value={userType}
@@ -126,7 +152,7 @@ function SignUp() {
                     </Form.Select>
                 </Form.Group>
                 <br/>
-                <Button class="btn btn-primary" block size="lg"  type="submit" disabled={!validateForm()}>
+                <Button class="btn btn-primary" block size="lg" type="submit" disabled={!validateForm()}>
                     Sign up
                 </Button>
             </Form>

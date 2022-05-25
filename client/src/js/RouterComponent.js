@@ -22,13 +22,13 @@ export default function router() {
                 {/*TODO: Add nested routes in nested files*/}
 
                 <Route exact path="/" element={<Login/>}/>
+                <Route path="/login" element={<Login/>}/>
                 <Route path="/signup" element={<SignUp/>}/>
 
                 <Route path="/manufacturer" element={<ManufacturerDashboard/>}/>
 
                 <Route path="/distributor" element={<DistributorDashboard/>}/>
 
-                {/*TODO: Add Distributor nested paths*/}
 
                 <Route path="/vendor" element={<VendorDashboard/>}/>
                 <Route path="/vendor/view-current-orders" element={<VendorViewOrders/>}/>
@@ -36,8 +36,6 @@ export default function router() {
 
 
                 <Route path="/customer" element={<CustomerDashboard/>}/>
-                {/*TODO: Add Customer nested paths*/}
-
             </Routes>
         </Router>)
 }

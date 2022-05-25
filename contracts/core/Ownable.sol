@@ -9,8 +9,8 @@ contract Ownable {
 
     /// Assign the contract to an owner
     constructor() public {
-        origOwner = msg.sender;
-        emit TransferOwnership(address(0), origOwner);
+//        origOwner = msg.sender;
+//        emit TransferOwnership(address(0), origOwner);
     }
 
     // Define a function 'kill' if required

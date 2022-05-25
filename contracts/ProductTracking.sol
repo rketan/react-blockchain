@@ -6,10 +6,10 @@ import "./accessControl/VendorRole.sol";
 import "./core/Ownable.sol";
 
 contract ProductTracking is
-    Ownable,
-    ManufacturerRole,
-    DistributorRole,
-    VendorRole
+Ownable,
+ManufacturerRole,
+DistributorRole,
+VendorRole
 {
     struct Product {
         uint256 sku;
@@ -53,7 +53,6 @@ contract ProductTracking is
     event Purchased(uint256 upc);
 
     constructor() public {
-        //TODO
     }
 
 
@@ -66,7 +65,17 @@ contract ProductTracking is
             return "distributor";
         }
         return "";
+    }
 
+    function login(string memory userName, string memory password) public view returns (address) {
+        if (super.isManufacturerViaName(userName)) {
+            return super.loginManufacturer(userName, password);
+        } else if (super.isVendorViaName(userName)) {
+            return super.loginVendor(userName, password);
+        } else if (super.isDistributorViaName(userName)) {
+            return super.loginDistributor(userName, password);
+        }
+        return address(0);
     }
 
     modifier verifyCaller(address payable _address) {
@@ -143,7 +152,8 @@ contract ProductTracking is
     ) public onlyManufacturer {
         Product memory newItem;
         newItem.ownerID = _originManufacturerID;
-        newItem.manufacturerID = _originManufacturerID; //NEW ADDITION
+        newItem.manufacturerID = _originManufacturerID;
+        //NEW ADDITION
         newItem.productID = _upc;
         newItem.name = name;
         newItem.sku = _sku;
@@ -159,10 +169,10 @@ contract ProductTracking is
     }
 
     function placeOrder(uint256 _upc, uint256 time)
-        public
-//        onlyManufacturer
-        manufactured(_upc)
-//        verifyCaller(products[_upc].manufacturerID)
+    public
+        //        onlyManufacturer //TODO: fix this
+    manufactured(_upc)
+        //        verifyCaller(products[_upc].manufacturerID)
     {
         Product storage existingItem = products[_upc];
         existingItem.currentStatus = State.OrderPlaced;
@@ -171,23 +181,23 @@ contract ProductTracking is
     }
 
     function shipToDistributor(uint256 _upc, address payable distID, uint256 time)
-        public
-        onlyManufacturer
-        orderPlaced(_upc)
-        verifyCaller(products[_upc].manufacturerID)
+    public
+    onlyManufacturer
+//    isDistributor(distID)
+    orderPlaced(_upc)
+    verifyCaller(products[_upc].manufacturerID)
     {
         Product storage existingItem = products[_upc];
         existingItem.currentStatus = State.Shipped;
-
         existingItem.distributorID = distID;
         productStamp[_upc]["Shipped"] = time;
         emit Shipped(_upc);
     }
 
     function recieveAsDistributor(uint256 _upc, uint256 time)
-        public
-        onlyDistributor
-        shipped(_upc)
+    public
+    onlyDistributor
+    shipped(_upc)
     {
         Product storage existingItem = products[_upc];
         existingItem.ownerID = msg.sender;
@@ -217,10 +227,10 @@ contract ProductTracking is
     }
 
     function sellProduct(uint256 _upc, uint256 time)
-        public
-        onlyVendor
-        vendorRecieved(_upc)
-        verifyCaller(products[_upc].vendorID)
+    public
+    onlyVendor
+    vendorRecieved(_upc)
+    verifyCaller(products[_upc].vendorID)
     {
         Product storage existingItem = products[_upc];
         existingItem.currentStatus = State.Purchased;
