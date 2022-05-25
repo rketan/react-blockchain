@@ -1,4 +1,4 @@
-pragma solidity >=0.4.22 <0.9.0;
+pragma solidity >=0.6.0 <0.9.0;
 
 import "./accessControl/DistributorRole.sol";
 import "./accessControl/ManufacturerRole.sol";
@@ -200,7 +200,7 @@ VendorRole
     }
 
 
-    function shipToDistributor(uint256 _upc, address payable distID, uint256 time)
+    function shipToDistributor(uint256 _upc, string memory distributorName, uint256 time)
     public
     onlyManufacturer
     orderAcceptedCheck(_upc)
@@ -208,7 +208,7 @@ VendorRole
     {
         Product storage existingItem = products[_upc];
         existingItem.currentStatus = State.Shipped;
-        existingItem.distributorID = distID;
+        existingItem.distributorID = payable(super.getDistributorId(distributorName));
         productStamp[_upc]["Shipped"] = time;
         emit Shipped(_upc);
     }
@@ -225,14 +225,14 @@ VendorRole
         emit DistRecieved(_upc);
     }
 
-    function shipToVendor(uint256 _upc, address payable vendorId, uint256 time)
+    function shipToVendor(uint256 _upc, string memory vendorName, uint256 time)
     public onlyDistributor
     distRecieved(_upc)
     verifyCaller(products[_upc].distributorID)
     {
         Product storage existingItem = products[_upc];
         existingItem.currentStatus = State.InTransit;
-        existingItem.vendorID = vendorId;
+        existingItem.vendorID = payable(super.getVendorId(vendorName));
         productStamp[_upc]["InTransit"] = time;
         emit InTransit(_upc);
     }

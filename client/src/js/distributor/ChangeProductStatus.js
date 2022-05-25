@@ -8,13 +8,13 @@ function DistributorChangeProductStatus(props) {
     const [nextValue, setNextValue] = useState(0);
     const [productID, setProductID] = useState(0);
 
-    const [vendorId, setVendorId] = useState(null);
+    const [vendorName, setVendorName] = useState(null);
+
 
 
     const {web3, contract, accountId} = useContext(AppContext);
-    const [localContract, setLocalContract] = contract;
-    const [acc, setAcc] = accountId;
-    const [localWeb3, setLocalWeb3] = web3;
+    const localContract= contract[0];
+    const localWeb3 = web3[0];
 
     React.useEffect(() => {
         setStateValue(parseInt(props.currentState));
@@ -40,7 +40,7 @@ function DistributorChangeProductStatus(props) {
 
 
             } else if (stateValue === 3) {
-                await localContract.methods.shipToVendor(props.productID, vendorId, Date.now()).send({from: accounts[0]});
+                await localContract.methods.shipToVendor(props.productID, vendorName, Date.now()).send({from: accounts[0]});
             }
         }
         props.parentCallback()
@@ -72,13 +72,13 @@ function DistributorChangeProductStatus(props) {
 
                         {stateValue === 3 &&
                             <div style={{marginTop: '5%'}}>
-                                <h5> Enter Vendor ID to ship to the vendor </h5>
+                                <h5> Enter Vendor name to ship to the vendor </h5>
                                 <input
                                     style={{width: '100%', lineHeight: '40px'}}
                                     type="text"
-                                    value={vendorId}
-                                    placeholder="Vendor ID"
-                                    onChange={e => setVendorId(e.target.value)}
+                                    value={vendorName}
+                                    placeholder="Vendor Name"
+                                    onChange={e => setVendorName(e.target.value)}
                                 />
                             </div>
                         }

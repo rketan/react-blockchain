@@ -9,7 +9,7 @@ function ChangeStatus(props) {
     const [stateValue, setStateValue] = useState("-1");
     const [nextValue, setNextValue] = useState(0);
     const [productID, setProductID] = useState(0);
-    const [distID, setDistID] = useState(null);
+    const [distName, setDistName] = useState(null);
 
     const {web3, contract, accountId} = useContext(AppContext);
     const localContract = contract[0];
@@ -45,8 +45,8 @@ function ChangeStatus(props) {
                     await localContract.methods.orderAccepted(productID, Date.now()).send({from: acc});
                 }
             } else if (stateValue === "7") {
-                if (distID !== null) {
-                    await localContract.methods.shipToDistributor(productID, distID, Date.now()).send({from: acc});
+                if (distName !== null) {
+                    await localContract.methods.shipToDistributor(productID, distName, Date.now()).send({from: acc});
                 }
             }
         }
@@ -77,13 +77,13 @@ function ChangeStatus(props) {
 
                         {stateValue === "7" &&
                             <div style={{marginTop:'5%'}}>
-                                <h5> Enter Distributor ID to ship to the distributor </h5>
+                                <h5> Enter Distributor name to ship to the distributor </h5>
                                 <input
                                     style={{width: '100%', lineHeight:'40px'}}
                                     type="text"
-                                    value={distID}
-                                    placeholder="Distributor ID"
-                                    onChange={e => setDistID(e.target.value)}
+                                    value={distName}
+                                    placeholder="Distributor Name"
+                                    onChange={e => setDistName(e.target.value)}
                                 />
                             </div>
                         }

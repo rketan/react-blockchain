@@ -5117,12 +5117,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x547730d80fAAd6715D09C64640ac70bA06148E1c",
-      "transactionHash": "0xb772bf4e83d2e5cdde1ee7ac399efdd72ee19ad666f8188c2ba341f8d1d9935b"
+      "address": "0x487c22334f2267af3b729C872a6BE61Af82d5dBb",
+      "transactionHash": "0x23d7aa0f2c4965231f3f06abcfee38bdd8184c424eec2f54737c9d55779fb51b"
     }
   },
   "schemaVersion": "3.4.7",
-  "updatedAt": "2022-05-25T09:31:57.179Z",
+  "updatedAt": "2022-05-25T10:57:47.949Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "Library for managing addresses assigned to a Role.",
