@@ -1,20 +1,19 @@
-import React, { useContext, useState } from 'react';
-import { AppContext } from '../App'
-import Table from 'react-bootstrap/Table'
+import React, {useContext, useState} from 'react';
+import {AppContext} from '../App'
 import ChangeStatus from './ChangeStatus';
 import "../../css/ViewProducts.css"
 import StateEnum from "../StateEnum"
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, Container, Row, Col } from 'react-bootstrap';
+import {Button, Col, Row} from 'react-bootstrap';
 import Card from 'react-bootstrap/Card'
 import AddProduct from './AddProducts';
 import boba from '../../static/img/uciboba.jpeg'
 
 function ViewProducts() {
-    const { web3, contract, accountId } = useContext(AppContext);
-    const [localContract, setLocalContract] = contract;
+    const {web3, contract, accountId} = useContext(AppContext);
+    const localContract = contract[0];
     const [acc, setAcc] = accountId;
-    const [localWeb3, setLocalWeb3] = web3;
+    const localWeb3 = web3[0];
 
     const [products, setProducts] = useState([]);
     const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -24,7 +23,7 @@ function ViewProducts() {
 
     const [shouldRender, setShouldRender] = useState(false);
 
-    const validProductStates = ["0", "1", "2"];
+    const validProductStates = ["0", "1", "7"];
 
     React.useEffect(() => {
         const getProducts = async () => {
@@ -95,16 +94,22 @@ function ViewProducts() {
 
     return (
         <>
-            <div style={{ minHeight: "390px", position: "relative", backgroundColor: "lightblue" }}>
+            <div style={{minHeight: "390px", position: "relative", backgroundColor: "lightblue"}}>
                 <Button className="view-btn btn-success" onClick={() => setShouldRender(true)}>
                     View Products
                 </Button>
-                <Button className="view-btn btn-primary" style={{ marginLeft: "100px" }}
-                    onClick={() => setAddProductModalToTrue()}>
+                <Button className="view-btn btn-primary" style={{marginLeft: "100px"}}
+                        onClick={() => setAddProductModalToTrue()}>
                     Add Product
                 </Button>
                 <img src={boba}
-                    style={{ borderRadius: "50%", width: "250px", height: "250px", marginTop: "120px", marginLeft: "50px" }}>
+                     style={{
+                         borderRadius: "50%",
+                         width: "250px",
+                         height: "250px",
+                         marginTop: "120px",
+                         marginLeft: "50px"
+                     }}>
                 </img>
             </div>
 
@@ -113,22 +118,22 @@ function ViewProducts() {
                     parentCallback={setAddProductModalToFalse}
                 />}
 
-            <Row xs={2} md={4} className="g-4" style={{ marginTop: '20px', marginLeft: '40px' }}>
+            <Row xs={2} md={4} className="g-4" style={{marginTop: '20px', marginLeft: '40px'}}>
                 {products.map((item, index) => (
                     <Col>
-                        <div style={{ marginTop: '20px' }}>
-                            <Card style={{ width: '20rem', height: '200px' }}>
+                        <div style={{marginTop: '20px'}}>
+                            <Card style={{width: '20rem', height: '200px'}}>
                                 <Card.Body>
                                     <Card.Title>{item.name}</Card.Title>
                                     <Card.Subtitle className="mb-2 text-muted">
                                         <b> UUID : </b> {item.productID}
-                                        <b style={{ marginLeft: '20px' }}> SKU : </b> {item.sku}
+                                        <b style={{marginLeft: '20px'}}> SKU : </b> {item.sku}
                                     </Card.Subtitle>
                                     <Card.Text>
                                         <div>
                                             <b>Description: </b> {item.desc} </div>
                                         <div>
-                                            <b style={{ float: "left" }}>
+                                            <b style={{float: "left"}}>
                                                 Current State:
                                             </b>
 
@@ -147,11 +152,11 @@ function ViewProducts() {
                                             currentState={item.currentStatus}
                                             productID={item.productID}
                                             parentCallback={setModalIsOpenToFalse}
-                                            index={index} />}
+                                            index={index}/>}
 
-                                    <div style={{ marginRight: '20%' }}>
+                                    <div style={{marginRight: '20%'}}>
                                         <Button
-                                            disabled={item.currentStatus == 2}
+                                            disabled={item.currentStatus == 0}
                                             id={index}
                                             className={item.currentStatus == 2 ? "Update-State-Btn btn-secondary" : "Update-State-Btn btn-success"}
                                             onClick={() => setModalIsOpenToTrue(index)}> Update State

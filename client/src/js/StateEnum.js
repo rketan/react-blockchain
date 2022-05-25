@@ -1,11 +1,12 @@
 const StateEnum = {
     0: "Manufactured",
-    1: "Order Placed",
+    1: "Order Request Placed",
     2: "Shipped",
-    3: "Distributor Recieved",
+    3: "Distributor Received",
     4: "In-Transit",
-    5: "Vendor Recieved",
-    6: "Purchased"
+    5: "Vendor Received",
+    6: "Purchased",
+    7: "Order Accepted"
 }
 
 export default StateEnum;

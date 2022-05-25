@@ -33,19 +33,21 @@ VendorRole
 
     enum State {
         Manufactured, // 0
-        OrderPlaced, // 1
+        OrderRequestPlaced, // 1
         Shipped, // 2
         DistRecieved, // 3
         InTransit, // 4
         VendorRecieved, // 5
-        Purchased // 6
+        Purchased, // 6
+        OrderAccepted //7
     }
 
     State constant defaultState = State.Manufactured;
 
     // Define 7 events with the same 8 state values and accept 'upc' as input argument
     event Manufactured(uint256 upc);
-    event OrderPlaced(uint256 upc);
+    event OrderRequestPlaced(uint256 upc);
+    event OrderAccepted(uint256 upc);
     event Shipped(uint256 upc);
     event DistRecieved(uint256 upc);
     event InTransit(uint256 upc);
@@ -94,13 +96,22 @@ VendorRole
         _;
     }
 
-    modifier orderPlaced(uint256 _upc) {
+    modifier orderAcceptedCheck(uint256 _upc) {
         require(
-            products[_upc].currentStatus == State.OrderPlaced,
-            "The Item is not in OrderPlaced state!"
+            products[_upc].currentStatus == State.OrderAccepted,
+            "The Item is not in OrderAccepted state!"
         );
         _;
     }
+
+    modifier orderRequestPlaced(uint256 _upc) {
+        require(
+            products[_upc].currentStatus == State.OrderRequestPlaced,
+            "The Item is not in OrderRequestPlaced state!"
+        );
+        _;
+    }
+
 
     modifier shipped(uint256 _upc) {
         require(
@@ -168,23 +179,31 @@ VendorRole
         emit Manufactured(_upc);
     }
 
-    function placeOrder(uint256 _upc, uint256 time)
-    public
-        //        onlyManufacturer //TODO: fix this
+    function placeOrderRequest(uint256 _upc, uint256 time)
+    public onlyVendor
     manufactured(_upc)
-        //        verifyCaller(products[_upc].manufacturerID)
     {
         Product storage existingItem = products[_upc];
-        existingItem.currentStatus = State.OrderPlaced;
-        productStamp[_upc]["OrderPlaced"] = time;
-        emit OrderPlaced(_upc);
+        existingItem.currentStatus = State.OrderRequestPlaced;
+        productStamp[_upc]["OrderRequestPlaced"] = time;
+        emit OrderRequestPlaced(_upc);
     }
+
+    function orderAccepted(uint256 _upc, uint256 time)
+    public onlyManufacturer
+    orderRequestPlaced(_upc)
+    {
+        Product storage existingItem = products[_upc];
+        existingItem.currentStatus = State.OrderAccepted;
+        productStamp[_upc]["OrderAccepted"] = time;
+        emit OrderAccepted(_upc);
+    }
+
 
     function shipToDistributor(uint256 _upc, address payable distID, uint256 time)
     public
     onlyManufacturer
-//    isDistributor(distID)
-    orderPlaced(_upc)
+    orderAcceptedCheck(_upc)
     verifyCaller(products[_upc].manufacturerID)
     {
         Product storage existingItem = products[_upc];

@@ -124,9 +124,10 @@ function VendorViewOrders() {
 
         async function placeOrderInternal() {
             console.log("placing order: " + productId + " " + manufacturerID);
-            await localContract.methods.placeOrder(productId, Date.now()).send({from: vendorID});
+            await localContract.methods.placeOrderRequest(productId, Date.now()).send({from: vendorID});
             alert("Order Placed Successfully");
             setShouldRenderViewOrders(false);
+            setShouldRenderPlaceOrder(false);
             setShouldRenderPlaceOrder(true);
         }
 
