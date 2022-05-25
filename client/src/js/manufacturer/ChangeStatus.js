@@ -37,11 +37,11 @@ function ChangeStatus(props) {
         if (localContract !== undefined && localContract.methods !== undefined) {
             if (stateValue == 0) {
                 if (productID !== undefined) {
-                    var event = await localContract.methods.placeOrder(productID).send({ from: acc });
+                    var event = await localContract.methods.placeOrder(productID, Date.now()).send({ from: acc });
                 }
             } else if (stateValue == 1) {
                 if (distID !== null) {
-                    var event = await localContract.methods.shipToDistributor(productID, distID).send({ from: acc });
+                    var event = await localContract.methods.shipToDistributor(productID, distID, Date.now()).send({ from: acc });
                 }
             }
         }

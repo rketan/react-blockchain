@@ -1,6 +1,7 @@
 import {useLocation, useNavigate} from "react-router-dom";
-import {Button} from "react-bootstrap";
 import React from "react";
+import NavComponent from "../NavComponent";
+import DistributorViewOrders from "./ViewOrders";
 
 function DistributorDashboard() {
     const navigate = useNavigate();
@@ -9,18 +10,12 @@ function DistributorDashboard() {
 
     return (
         <>
-
-            <h3 style={{position: 'fixed', top: 30, left: 1200}}>
-                Welcome Distributor {location.state.userName}
-            </h3>
-            <div className="inner2">
-
-                <Button className="upload-file-btn"
-                        style={{position: "fixed", left: "800px", top: "150px"}}
-                        onClick={() => navigate("/distributor/view-current-orders")}>View current orders
-                </Button>
-
-            </div>
+            <NavComponent 
+            username={location.state.userName}
+            entity={"Distributor"}
+            />
+            
+            <DistributorViewOrders />
         </>
     )
 }

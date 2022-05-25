@@ -18,7 +18,7 @@ contract ManufacturerRole {
   // In the constructor make the address that deploys this contract the 1st Manufacturer
   constructor() public {
     // The first Manufacturer will be the person deploying this contract
-    _addManufacturer(msg.sender);
+//    _addManufacturer(msg.sender);
   }
 
   // Define a modifier that checks to see if msg.sender has the appropriate role
@@ -32,19 +32,27 @@ contract ManufacturerRole {
        return manufacturers.has(account);
   }
 
-  // Define a function 'addManufacturer' that adds this role
-  function addManufacturer(address account) public {
-      _addManufacturer(account);
+  function isManufacturerViaName(string memory userName) public view returns (bool) {
+    return manufacturers.nameToAccountAndPasswordMapping[userName].isUserVerified == true;
   }
 
+  // Define a function 'addManufacturer' that adds this role
+  function addManufacturer(address account, string memory name, string memory password) public {
+      _addManufacturer(account, name, password);
+  }
+
+
+  function loginManufacturer(string memory userName, string memory password) public view returns (address){
+    return manufacturers.login(userName, password);
+  }
   // Define a function 'renounceManufacturer' to renounce this role
   function renounceManufacturer() public {
     _removeManufacturer(msg.sender);
   }
 
   // Define an internal function '_addManufacturer' to add this role, called by 'addManufacturer'
-  function _addManufacturer(address account) internal {
-    manufacturers.add(account);
+  function _addManufacturer(address account, string memory name, string memory password) internal {
+    manufacturers.add(account, name, password);
     emit ManufacturerAdded(account);
   }
 

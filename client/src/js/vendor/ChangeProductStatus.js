@@ -32,11 +32,11 @@ function VendorChangeProductStatus(props) {
         if (localContract.methods !== undefined) {
             if (stateValue === 4) {
                 if (props.productID !== undefined) {
-                    await localContract.methods.recieveAsVendor(props.productID).send({from: acc});
+                    await localContract.methods.recieveAsVendor(props.productID, Date.now()).send({from: acc});
                 }
 
             } else if (stateValue === 5) {
-                await localContract.methods.sellProduct(props.productID).send({from: acc});
+                await localContract.methods.sellProduct(props.productID, Date.now()).send({from: acc});
             }
         }
         props.parentCallback()

@@ -1,18 +1,22 @@
-import Table from "react-bootstrap/Table";
 import React, {useContext, useState} from "react";
 import {AppContext} from "../App";
-import {Modal, Button} from "react-bootstrap";
+import {Row, Col, Button} from "react-bootstrap";
 import DistributorChangeProductStatus from './ChangeProductStatus';
 import StateEnum from "../StateEnum"
+import Card from 'react-bootstrap/Card'
+import boba from '../../static/img/uciboba.jpeg'
 
 function DistributorViewOrders() {
 
     const {web3, contract, accountId} = useContext(AppContext);
-    const localWeb3 = web3;
+
+    const [localWeb3, setLocalWeb3] = web3;
     const [localContract, setLocalContract] = contract;
+
     const [products, setProducts] = useState([]);
     const [distributorId, setDistributorId] = accountId;
-    const validProductStates = ["2", "3"];
+    const validProductStates = ["2", "3", "4"];
+
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [stateIndex, setStateIndex] = useState(-1);
     const[shouldRender, setShouldRender] = useState(false);
@@ -21,29 +25,34 @@ function DistributorViewOrders() {
     React.useEffect(() => {
 
         const getProducts = async () => {
-
             if(localWeb3 !== undefined && localWeb3.eth !== undefined) {
                 const accounts = await localWeb3.eth.getAccounts();
                 setDistributorId(accounts[0]);
             }
-            let productsCount = await localContract.methods.productsCount().call();
+
+            if (localContract !== undefined && localContract.methods !== undefined) {
+                let productsCount = await localContract.methods.productsCount().call();
             getDistributorProducts(productsCount)
                 .then(function (localProducts) {
                     setProducts(localProducts);
                 });
-
+            }
         };
+
         setShouldRender(false)
 
         getProducts().catch(console.error);
     }, [shouldRender]);
+
 
     function productStateName(productState) {
         return StateEnum[productState];
     }
 
     function isValidDistributorProduct(product) {
-        return product.distributorID === accountId[0] && validProductStates.includes(product.currentStatus);
+        if(product === null || distributorId === null) return false;
+        
+        return product.distributorID === distributorId && validProductStates.includes(product.currentStatus);
     }
 
     async function getDistributorProducts(productsCount) {
@@ -68,6 +77,8 @@ function DistributorViewOrders() {
             return "Acknowledge Shipment";
         } else if (status === "3") {
             return "Send to Vendor";
+        } else if (status === "4") {
+            return "No Action";
         }
     }
 
@@ -79,7 +90,6 @@ function DistributorViewOrders() {
     const setModalIsOpenToFalse = () => {
         setModalIsOpen(false);
         setShouldRender(true);
-
     }
 
 
@@ -105,52 +115,85 @@ function DistributorViewOrders() {
             return "btn btn-primary btn-sm";
         } else if (status === "3") {
             return "btn btn-success btn-sm";
+        } else if (status === "4") {
+            return "btn btn-secondary btn-sm";
         }
-
     }
 
     return (
-        <>
-            <h1>View Distributor's orders</h1>
-            <br/>
-            <Table class="table">
-                <thead class="thead-dark">
-                <tr>
-                    <th scope="col">UUID</th>
-                    <th scope="col">SKU</th>
-                    <th scope="col">Product Name</th>
-                    <th scope="col">Product Description</th>
-                    <th scope="col">Current Order status</th>
-                    <th scope="col">Take action</th>
-                </tr>
-                </thead>
-                <tbody>
-                {products.map((item, index) => {
-                    return (
-                        <tr>
-                            <td>{item.productID}</td>
-                            <td>{item.sku}</td>
-                            <td>{item.name}</td>
-                            <td>{item.desc}</td>
-                            <td>{productStateName(item.currentStatus)}</td>
+        <div style={{marginTop: '20px'}}>
+            <div style={{ minHeight: "390px", position: "relative", backgroundColor: "lightblue" }}>
+                <Button className="view-btn btn-success" onClick={() => setShouldRender(true)}>
+                    View Products
+                </Button>
+                <img src={boba}
+                    style={{ borderRadius: "50%", width: "250px", height: "250px", marginTop: "120px", marginLeft: "50px" }}>
+                </img>
+            </div>
+            <Row xs={2} md={4} className="g-4" style={{ marginTop: '20px', marginLeft: '40px' }}>
+                {products.map((item, index) => (
+                    <Col>
+                        <div style={{ marginTop: '20px' }}>
+                            <Card style={{ width: '20rem', height: '200px' }}>
+                                <Card.Body>
+                                    <Card.Title>{item.name}</Card.Title>
+                                    <Card.Subtitle className="mb-2 text-muted">
+                                        <b> UUID : </b> {item.productID}
+                                        <b style={{ marginLeft: '20px' }}> SKU : </b> {item.sku}
+                                    </Card.Subtitle>
+                                    <Card.Text>
+                                        <div>
+                                            <b>Description: </b> {item.desc} </div>
+                                        <div>
+                                            <b style={{ float: "left" }}>
+                                                Current State:
+                                            </b>
 
-                            {modalIsOpen && index === stateIndex &&
+                                            <b style={{
+                                                float: "right", backgroundColor: "lightblue",
+                                                width: "60%", textAlign: "center", fontSize: '15px'
+                                            }}>
+                                                {productStateName(item.currentStatus)}
+                                            </b>
+
+                                        </div>
+                                    </Card.Text>
+
+                                    {modalIsOpen && index === stateIndex &&
                                 <DistributorChangeProductStatus
                                     currentState={item.currentStatus}
                                     productID={item.productID}
                                     parentCallback={setModalIsOpenToFalse}
                                     index={index}/>}
-                            <td>
-                                <button className={getClassName(item.currentStatus)}
-                                        onClick={getOnClickHandler(item.currentStatus, index)}>{getButtonNameBasedOnStatus(item.currentStatus)}</button>
-                            </td>
-                        </tr>
-                    );
-                })
-                }
-                </tbody>
-            </Table>
-        </>
+
+<div style={{textAlign: "center", border: "1px"}}>
+<button
+                                        style={{marginTop: '22px', marginRight: '50px'}}
+                                        className={getClassName(item.currentStatus)}
+                                        onClick={getOnClickHandler(item.currentStatus, index)}>
+                                            {getButtonNameBasedOnStatus(item.currentStatus)}
+                                    </button>
+</div>
+
+                                    
+
+                                    {/* <div style={{ marginRight: '20%' }}>
+                                        <Button
+                                            disabled={item.currentStatus == 2}
+                                            id={index}
+                                            className={item.currentStatus == 2 ? "Update-State-Btn btn-secondary" : "Update-State-Btn btn-success"}
+                                            onClick={() => setModalIsOpenToTrue(index)}> Update State
+                                        </Button>
+
+                                    </div> */}
+
+                                </Card.Body>
+                            </Card>
+                        </div>
+                    </Col>
+                ))}
+            </Row>
+        </div>
     );
 }
 

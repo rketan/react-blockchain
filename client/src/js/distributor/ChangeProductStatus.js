@@ -29,26 +29,18 @@ function DistributorChangeProductStatus(props) {
     }
 
     async function callback() { //TODO: graceful open, close on success/failure/close button of modal
-        // Declare and Initialize a variable for event
-        let eventEmitted = false;
-        // Watch the emitted event OrderPlaced()
-        localContract.events.OrderPlaced(() => {
-            eventEmitted = true;
-            console.log("rketan: WOHOOOO", eventEmitted)
-        });
-
         // update the state to the backend
         if (localContract.methods !== undefined) {
             const accounts = await localWeb3.eth.getAccounts();
             if (stateValue === 2) {
 
                 if (props.productID !== undefined) {
-                    await localContract.methods.recieveAsDistributor(props.productID).send({from: accounts[0]});
+                    await localContract.methods.recieveAsDistributor(props.productID, Date.now()).send({from: accounts[0]});
                 }
 
 
             } else if (stateValue === 3) {
-                await localContract.methods.shipToVendor(props.productID, vendorId).send({from: accounts[0]});
+                await localContract.methods.shipToVendor(props.productID, vendorId, Date.now()).send({from: accounts[0]});
             }
         }
         props.parentCallback()
