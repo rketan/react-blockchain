@@ -1,15 +1,29 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 
 import './../css/App.css'
 import RouterComponent from "./RouterComponent";
-import { Container } from 'react-bootstrap';
-import logo from '../static/img/blockchain.jpg'
+import {Container} from 'react-bootstrap';
 import getWeb3 from "./getWeb3";
 import ProductTrackingContract from "../contracts/ProductTracking.json";
+import { tsParticles } from "tsparticles-engine";
+import Particles from "../Particles";
 
 export const AppContext = React.createContext(null);
 
+
 function App() {
+
+    const styles = {
+        root: {
+            fontFamily: "sans-serif",
+            textAlign: "center",
+            height: "100%",
+            background: "#222",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center"
+        }
+    };
 
     const [web3, setWeb3] = useState(null);
     const [contract, setContract] = useState(null);
@@ -37,6 +51,17 @@ function App() {
 
     }, []);
 
+    tsParticles
+        .loadJSON("particles", "../presets/particlesjs-config.json")
+        .then((container) => {
+            console.log("callback - tsparticles config loaded");
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+    const particles = tsParticles.domItem(0);
+    particles.play();
+
     const AppProvider = props => {
         return (
             <AppContext.Provider
@@ -51,14 +76,15 @@ function App() {
     };
 
     return (
-        <div className="bg-image">
-            <Container style={{ maxWidth:"100%", padding:'0px' }}>
-                <div className="" style={{  }}>
+        <div style={styles.root} className="bg-image">
+            <Container style={{maxWidth: "100%", padding: '0px'}}>
+                <div className="" style={{}}>
                     <AppProvider>
-                        <RouterComponent />
+                        <RouterComponent/>
                     </AppProvider>
                 </div>
             </Container>
+            <Particles />
         </div>
     );
 }
