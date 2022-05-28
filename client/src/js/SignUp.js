@@ -4,6 +4,7 @@ import Button from "react-bootstrap/Button";
 import "../css/Login.css";
 import {useNavigate} from "react-router";
 import {AppContext} from './App'
+import logo from '../static/img/blockchain.jpg'
 
 function SignUp() {
     const {web3, contract, accountId} = useContext(AppContext);
@@ -108,6 +109,18 @@ function SignUp() {
 
     return (
         <div className="Login">
+            
+            <img
+          alt=""
+          src={logo}
+          width="200"
+          height="200"
+          className="d-inline-block align-top"
+          style={{ borderRadius: "50%", marginTop:'2%', marginLeft:'3%'}}
+        />
+
+        <h1 style={{textAlign: "center", alignSelf: "center", top:'70px', position:'fixed', left:'750px', fontSize:'78px'}}> ZotChain
+            </h1>
             <Form onSubmit={handleSubmit} className="card p-4 bg-light">
                 <Form.Group size="lg" controlId="userName">
                     <h3 style={{color: "black", textAlign: "center", alignSelf: "center"}}>Signup</h3>
