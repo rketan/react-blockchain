@@ -5,6 +5,7 @@ import StateEnum from "../StateEnum";
 import {Button, Col, Row} from "react-bootstrap";
 import Card from 'react-bootstrap/Card'
 import boba from '../../static/img/uciboba.jpeg'
+import ProductHistory from "./ProductHistory";
 
 function VendorViewOrders() {
 
@@ -20,9 +21,13 @@ function VendorViewOrders() {
     const validProductStates = ["4", "5", "6"];
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [stateIndex, setStateIndex] = useState(-1);
+
     const [shouldRenderViewOrders, setShouldRenderViewOrders] = useState(true);
     const [shouldRenderPlaceOrder, setShouldRenderPlaceOrder] = useState(false);
 
+    const [renderProductHistory, setRenderProductHistory] = useState(false);
+
+    const [product, setProduct] = useState(null);
 
     React.useEffect(() => {
         const getProducts = async () => {
@@ -36,42 +41,72 @@ function VendorViewOrders() {
                 getVendorProducts(productsCount, "viewOrder")
                     .then(function (localProducts) {
                         setProducts(localProducts);
-                    });
-            }
+                });
 
-        };
-        if (shouldRenderViewOrders) {
-            setShouldRenderViewOrders(true);
-        } else {
-            setShouldRenderViewOrders(false);
-        }
-        getProducts().catch(console.error);
-    }, [shouldRenderViewOrders]);
-
-
-    React.useEffect(() => {
-        const getProducts = async () => {
-            if (localWeb3 !== undefined && localWeb3.eth !== undefined) {
-                const accounts = await localWeb3.eth.getAccounts();
-                setVendorID(accounts[0]);
-            }
-
-            if (localContract !== undefined && localContract.methods !== undefined) {
-                let productsCount = await localContract.methods.productsCount().call();
                 getVendorProducts(productsCount, "placeOrder")
                     .then(function (localProducts) {
                         setPurchaseEligibleProducts(localProducts);
                     });
             }
 
+        };
+
+        console.log("rketan: mount function called", shouldRenderViewOrders, shouldRenderPlaceOrder, renderProductHistory)
+
+        if (shouldRenderViewOrders) {
+            setShouldRenderViewOrders(true);
+        } else {
+            setShouldRenderViewOrders(false);
         }
+
+        if (renderProductHistory) {
+            setRenderProductHistory(true);
+        } else {
+            setRenderProductHistory(false);
+        }
+
         if (shouldRenderPlaceOrder) {
             setShouldRenderPlaceOrder(true);
         } else {
             setShouldRenderPlaceOrder(false);
         }
+
         getProducts().catch(console.error);
-    }, [shouldRenderPlaceOrder]);
+        // setShouldRenderPlaceOrder(false);
+        // setShouldRenderViewOrders(true);
+        // setRenderProductHistory(false);
+
+    }, [shouldRenderViewOrders, renderProductHistory, shouldRenderPlaceOrder]);
+
+    // React.useEffect(() => {
+        // const getProducts = async () => {
+        //     if (localWeb3 !== undefined && localWeb3.eth !== undefined) {
+        //         const accounts = await localWeb3.eth.getAccounts();
+        //         setVendorID(accounts[0]);
+        //     }
+
+        //     if (localContract !== undefined && localContract.methods !== undefined) {
+        //         let productsCount = await localContract.methods.productsCount().call();
+                
+        //     }
+
+        // }
+
+        // if (shouldRenderPlaceOrder) {
+        //     setShouldRenderPlaceOrder(true);
+        // } else {
+        //     setShouldRenderPlaceOrder(false);
+        // }
+        // getProducts().catch(console.error);
+
+        // if (renderProductHistory) {
+        //     setRenderProductHistory(true);
+        // } else {
+        //     setRenderProductHistory(false);
+        // }
+
+
+    // }, [shouldRenderPlaceOrder, renderProductHistory]);
 
     function isValidVendorProduct(product) {
         return product.vendorID === vendorID && validProductStates.includes(product.currentStatus);
@@ -106,24 +141,28 @@ function VendorViewOrders() {
         } else if (status === "5") {
             return "Record Customer Purchase";
         } else {
-            return "Customer Purchased";
+            return "View Product History";
         }
     }
 
     const setModalIsOpenToTrue = (index) => {
         setModalIsOpen(true);
         setStateIndex(index);
+        setRenderProductHistory(false)
+        setShouldRenderViewOrders(true);
     }
 
     const setModalIsOpenToFalse = () => {
         setModalIsOpen(false);
         setShouldRenderViewOrders(true);
+        setRenderProductHistory(false)
     }
 
     function placeOrder(productId, manufacturerID) {
 
         async function placeOrderInternal() {
             console.log("placing order: " + productId + " " + manufacturerID);
+            console.log("rketan : vendor placeOrder : ", Date.now())
             await localContract.methods.placeOrder(productId, Date.now()).send({from: vendorID});
             alert("Order Placed Successfully");
             setShouldRenderViewOrders(false);
@@ -133,49 +172,71 @@ function VendorViewOrders() {
         return placeOrderInternal;
     }
 
-    function getOnClickHandler(status, index) {
+    function getOnClickHandler(status, index, product) {
 
-        function handleAcknowledgeShipment() {
-            setModalIsOpenToTrue(index);
-        }
+        // function handleAcknowledgeShipment() {
+            
+        // }
 
-        function handleCustomerPurchase() {
-            setModalIsOpenToTrue(index);
-        }
+        // function handleCustomerPurchase() {
+            
+        // }
 
         if (status === "4") {
-            return handleAcknowledgeShipment;
+            setModalIsOpenToTrue(index);
         } else if (status === "5") {
-            return handleCustomerPurchase;
+            setModalIsOpenToTrue(index);
+        } else if (status === "6") {
+            console.log("rketan: on click state = 6")
+            setShouldRenderViewOrders(false);
+            setRenderProductHistory(true)
+            setShouldRenderPlaceOrder(false);
+
+            setProduct(product);
         }
     }
 
     function getClassName(status) {
-        if (status === "4") {
+        if (status === "4" || status === "5") {
             return "btn btn-primary btn-sm";
-        } else if (status === "5") {
-            return "btn btn-warning btn-sm";
         } else {
             return "btn btn-success btn-sm";
         }
+    }
+
+    const getBgColor = (currentState) => {
+        return currentState == 4 ? "rgb(255 164 114)" : currentState == 5 ? "rgb(144 108 158)" : "#55c083";
+    }
+
+    function viewProductClicked() {
+        setRenderProductHistory(false);
+        setShouldRenderViewOrders(true);
+        setShouldRenderPlaceOrder(false);    
     }
 
     return (
         <div style={{marginTop: '20px'}}>
 
             <div style={{minHeight: "390px", position: "relative", backgroundColor: "lightblue"}}>
-                <Button className="view-btn btn-success" onClick={() => {
-                    setShouldRenderViewOrders(true);
-                    setShouldRenderPlaceOrder(false);
-                }}>
+                <Button className="view-btn btn-success" onClick={viewProductClicked}>
                     View Products
                 </Button>
-                <Button className="view-btn btn-primary" style={{marginLeft: "100px"}} onClick={() => {
+
+                <Button className="view-btn btn-primary" style={{marginLeft: "60px"}} onClick={() => {
                     setShouldRenderViewOrders(false);
                     setShouldRenderPlaceOrder(true);
+                    setRenderProductHistory(false);
                 }}>
                     Place Order
                 </Button>
+                {/* <Button className="view-btn btn-primary" style={{marginLeft: "60px"}} 
+                onClick={() => {
+                    setRenderProductHistory(true)
+                    setShouldRenderViewOrders(false)
+                    //setShouldRenderPlaceOrder(false);
+                }}>
+                    View Product History
+                </Button> */}
                 <img src={boba}
                      style={{
                          borderRadius: "50%",
@@ -201,7 +262,7 @@ function VendorViewOrders() {
                                             <b style={{marginLeft: '20px'}}> SKU : </b> {item.sku}
                                         </Card.Subtitle>
                                         <Card.Text>
-                                            <div>
+                                            <div style={{ marginBottom: '3%' }}>
                                                 <b>Description: </b> {item.desc} </div>
                                             <div>
                                                 <b style={{float: "left"}}>
@@ -209,7 +270,7 @@ function VendorViewOrders() {
                                                 </b>
 
                                                 <b style={{
-                                                    float: "right", backgroundColor: "lightblue",
+                                                    float: "right", backgroundColor: getBgColor(item.currentStatus),
                                                     width: "60%", textAlign: "center", fontSize: '18px'
                                                 }}>
                                                     {StateEnum[item.currentStatus]}
@@ -220,14 +281,17 @@ function VendorViewOrders() {
 
                                         {modalIsOpen && index === stateIndex &&
                                             <VendorChangeProductStatus
+                                                getBgColor={getBgColor}
                                                 currentState={item.currentStatus}
                                                 productID={item.productID}
                                                 parentCallback={setModalIsOpenToFalse}
                                                 index={index}/>}
 
-                                        <div style={{marginRight: '10%', marginTop: '16%', marginLeft: '20%'}}>
-                                            <button className={getClassName(item.currentStatus)}
-                                                    onClick={getOnClickHandler(item.currentStatus, index)}>
+                                        <div style={{marginRight: '10%', marginTop: '18%', marginLeft: '20%'}}>
+                                            <button
+                                                    // disabled={item.currentStatus == 6}
+                                                    className={getClassName(item.currentStatus)}
+                                                    onClick={() => getOnClickHandler(item.currentStatus, index, item)}>
                                                 {getButtonNameBasedOnStatus(item.currentStatus)}
                                             </button>
                                         </div>
@@ -272,7 +336,12 @@ function VendorViewOrders() {
                             </div>
                         </Col>
                     ))}
-                </Row>}
+                </Row>
+            }
+
+                {renderProductHistory && 
+                    <ProductHistory 
+                    product={product}/>}
         </div>
     );
 }

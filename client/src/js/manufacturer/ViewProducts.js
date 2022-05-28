@@ -39,6 +39,8 @@ function ViewProducts() {
                     .then(function (localProducts) {
                         setProducts(localProducts);
                     }.bind(this));
+
+                console.log("rketan: man products", productsCount)
             }
         };
 
@@ -93,6 +95,10 @@ function ViewProducts() {
         setShouldRender(true)
     }
 
+    const getBgColor = (currentState) => {
+        return currentState == 0 ? "#f67c87" : currentState == 1 ? "#7c9af6" : "#eab335";
+    }
+
     return (
         <>
             <div style={{ minHeight: "390px", position: "relative", backgroundColor: "lightblue" }}>
@@ -125,7 +131,7 @@ function ViewProducts() {
                                         <b style={{ marginLeft: '20px' }}> SKU : </b> {item.sku}
                                     </Card.Subtitle>
                                     <Card.Text>
-                                        <div>
+                                        <div style={{ marginBottom: '3%' }}>
                                             <b>Description: </b> {item.desc} </div>
                                         <div>
                                             <b style={{ float: "left" }}>
@@ -133,8 +139,11 @@ function ViewProducts() {
                                             </b>
 
                                             <b style={{
-                                                float: "right", backgroundColor: "lightblue",
-                                                width: "60%", textAlign: "center", fontSize: '18px'
+                                                float: "right", 
+                                                backgroundColor: getBgColor(item.currentStatus),
+                                                width: "60%", 
+                                                textAlign: "center", 
+                                                fontSize: '18px'
                                             }}>
                                                 {productStateName(item.currentStatus)}
                                             </b>
@@ -144,6 +153,7 @@ function ViewProducts() {
 
                                     {modalIsOpen && index === stateIndex &&
                                         <ChangeStatus
+                                            getBgColor={getBgColor}
                                             currentState={item.currentStatus}
                                             productID={item.productID}
                                             parentCallback={setModalIsOpenToFalse}

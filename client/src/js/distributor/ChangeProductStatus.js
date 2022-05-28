@@ -35,11 +35,13 @@ function DistributorChangeProductStatus(props) {
             if (stateValue === 2) {
 
                 if (props.productID !== undefined) {
+                    console.log("rketan : recieveAsDistributor : ", Date.now())
                     await localContract.methods.recieveAsDistributor(props.productID, Date.now()).send({from: accounts[0]});
                 }
 
 
             } else if (stateValue === 3) {
+                console.log("rketan : shipToVendor : ", Date.now())
                 await localContract.methods.shipToVendor(props.productID, vendorId, Date.now()).send({from: accounts[0]});
             }
         }
@@ -55,29 +57,54 @@ function DistributorChangeProductStatus(props) {
                    centered>
                 <Modal.Header closeButton>
                     <Modal.Title>
-                        <div style={{marginLeft: '120px'}}>
-                            Update State Dialog
+                        <div style={{marginLeft: '90px'}}>
+                        Update State for Product {props.productID}
                         </div>
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div>
-                        Current State : {StateEnum[stateValue]}
+                    <div>
+                            <b style={{ float: "left", fontSize: '18px' }}>
+                                Current State :
+                            </b>
+                            <b style={{
+                                float: "right",
+                                backgroundColor: props.getBgColor(stateValue),
+                                width: "70%",
+                                textAlign: "center",
+                                fontSize: '18px'
+                            }}>
+                                {StateEnum[stateValue]}
+                            </b>
+                        </div>
+
                         <br></br>
-                        Next State: {StateEnum[nextValue]}
-                        {/*//TODO: replace with enum*/}
-                        <br></br>
-                        Product ID: {props.productID}
                         <br></br>
 
+                        <div style={{ paddingBlock: '10px' }}>
+                            <b style={{ float: "left", fontSize: '18px' }}>
+                                Next State :
+                            </b>
+                            <b style={{
+                                float: "right",
+                                backgroundColor: props.getBgColor(nextValue),
+                                width: "70%",
+                                textAlign: "center",
+                                fontSize: '18px'
+                            }}>
+                                {StateEnum[nextValue]}
+                            </b>
+                        </div>
+
                         {stateValue === 3 &&
-                            <div style={{marginTop: '5%'}}>
-                                <h5> Enter Vendor ID to ship to the vendor </h5>
+                            <div style={{marginTop: '10%'}}>
+                                <b style={{fontSize: '18px'}}> Enter Vendor Username to ship to the Vendor </b>
                                 <input
-                                    style={{width: '100%', lineHeight: '40px'}}
+                                    style={{width: '100%', lineHeight: '40px', marginTop:'2%'}}
                                     type="text"
                                     value={vendorId}
-                                    placeholder="Vendor ID"
+                                    placeholder="Vendor Name"
                                     onChange={e => setVendorId(e.target.value)}
                                 />
                             </div>

@@ -4,6 +4,7 @@ import Button from "react-bootstrap/Button";
 import "../css/Login.css";
 import {AppContext} from "./App";
 import {useNavigate} from "react-router";
+import logo from '../static/img/blockchain.jpg'
 
 
 function Login() {
@@ -82,8 +83,19 @@ function Login() {
     }
 
     return (
-
+        
         <div className="Login">
+            <img
+          alt=""
+          src={logo}
+          width="150"
+          height="150"
+          className="d-inline-block align-top"
+          style={{ borderRadius: "50%", marginTop:'2%', marginLeft:'3%'}}
+        />
+
+<h1 style={{textAlign: "center", alignSelf: "center", top:'70px', position:'fixed', left:'750px', fontSize:'78px'}}> ZotChain
+            </h1>
             <Form onSubmit={handleLogin} className="card p-4 bg-light">
                 <Form.Group size="lg" controlId="userName">
                     <h3 style={{color: "black", textAlign: "center", alignSelf: "center"}}>Login</h3>

@@ -15,6 +15,7 @@ function AddProduct(props) {
         }
 
         if (localContract !== undefined && localContract.methods !== undefined) {
+            console.log("rketan : manufactureProduct : ", Date.now())
             await localContract.methods
                 .manufactureProduct(productUUID, productName, productSKU, productDesc, account, Date.now())
                 .send({from: account});

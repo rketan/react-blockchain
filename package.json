@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "react-modal": "^3.15.1"
+    "react-modal": "^3.15.1",
+    "react-vertical-timeline-component": "^3.5.2"
   }
 }

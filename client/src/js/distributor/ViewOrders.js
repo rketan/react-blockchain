@@ -111,13 +111,15 @@ function DistributorViewOrders() {
     }
 
     function getClassName(status) {
-        if (status === "2") {
+        if (status === "2" || status === "3") {
             return "btn btn-primary btn-sm";
-        } else if (status === "3") {
-            return "btn btn-success btn-sm";
         } else if (status === "4") {
             return "btn btn-secondary btn-sm";
         }
+    }
+
+    const getBgColor = (currentState) => {
+        return currentState == 2 ? "#eab335" : currentState == 3 ? "#41ffc5" : "rgb(255 164 114)";
     }
 
     return (
@@ -142,7 +144,7 @@ function DistributorViewOrders() {
                                         <b style={{ marginLeft: '20px' }}> SKU : </b> {item.sku}
                                     </Card.Subtitle>
                                     <Card.Text>
-                                        <div>
+                                        <div style={{ marginBottom: '3%' }}>
                                             <b>Description: </b> {item.desc} </div>
                                         <div>
                                             <b style={{ float: "left" }}>
@@ -150,7 +152,7 @@ function DistributorViewOrders() {
                                             </b>
 
                                             <b style={{
-                                                float: "right", backgroundColor: "lightblue",
+                                                float: "right", backgroundColor: getBgColor(item.currentStatus),
                                                 width: "60%", textAlign: "center", fontSize: '15px'
                                             }}>
                                                 {productStateName(item.currentStatus)}
@@ -161,31 +163,21 @@ function DistributorViewOrders() {
 
                                     {modalIsOpen && index === stateIndex &&
                                 <DistributorChangeProductStatus
+                                    getBgColor={getBgColor}
                                     currentState={item.currentStatus}
                                     productID={item.productID}
                                     parentCallback={setModalIsOpenToFalse}
                                     index={index}/>}
 
-<div style={{textAlign: "center", border: "1px"}}>
-<button
-                                        style={{marginTop: '22px', marginRight: '50px'}}
-                                        className={getClassName(item.currentStatus)}
-                                        onClick={getOnClickHandler(item.currentStatus, index)}>
+                                    <div style={{ textAlign: "center", border: "1px" }}>
+                                        <button
+                                            disabled={item.currentStatus == 4}
+                                            style={{ marginTop: '22px', fontSize: '16px' }}
+                                            className={getClassName(item.currentStatus)}
+                                            onClick={getOnClickHandler(item.currentStatus, index)}>
                                             {getButtonNameBasedOnStatus(item.currentStatus)}
-                                    </button>
-</div>
-
-                                    
-
-                                    {/* <div style={{ marginRight: '20%' }}>
-                                        <Button
-                                            disabled={item.currentStatus == 2}
-                                            id={index}
-                                            className={item.currentStatus == 2 ? "Update-State-Btn btn-secondary" : "Update-State-Btn btn-success"}
-                                            onClick={() => setModalIsOpenToTrue(index)}> Update State
-                                        </Button>
-
-                                    </div> */}
+                                        </button>
+                                    </div>
 
                                 </Card.Body>
                             </Card>
