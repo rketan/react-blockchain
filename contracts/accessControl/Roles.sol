@@ -42,6 +42,10 @@ library Roles {
     }
 
     function addNewAddress(Role storage role, address name, address id) internal{
+        for (uint i=0; i<role.rememberAccounts[name].length; i++) {
+            if (role.rememberAccounts[name][i] == id)
+                return;
+        }
         role.rememberAccounts[name].push(id);
     }
 

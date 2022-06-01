@@ -25,8 +25,9 @@ function ChangeStatus(props) {
         const getDists = async () => {
             fetchAccount().then(function(accounts) {
                 console.log("account", accounts[0]);
+                setAcc(accounts[0]);
                 if (accounts !== null) {
-                    fetchDists(accounts[0]).then(function (kd) {
+                    fetchDists().then(function (kd) {
                         console.log("knowndists: ", kd);
                         setKnownDists(kd);
                     }.bind(this));
@@ -44,7 +45,7 @@ function ChangeStatus(props) {
         return accounts;
     }
 
-    async function fetchDists(acc) {
+    async function fetchDists() {
         if (localContract !== undefined && localContract.methods !== undefined && acc != null) {
             let dists = await localContract.methods.getDistAddresses(acc).call();
             console.log("dists", dists);
@@ -76,7 +77,6 @@ function ChangeStatus(props) {
             } else if (stateValue == 1) {
                 if (distID !== null) {
                     console.log("rketan : shipToDistributor : ", Date.now())
-                    var rememberEvent = await localContract.methods.addDistAddress(acc, distID).call();
                     var event = await localContract.methods.shipToDistributor(productID, distID, Date.now()).send({ from: acc });
                 }
             }
@@ -143,6 +143,9 @@ function ChangeStatus(props) {
                                     onChange={e => setDistID(e.target.value)}
                                 />
                                 <select onChange={e => setDistID(e.target.value)}>
+                                    <option>
+                                        
+                                    </option>
                                     {knownDists.map((dist) => (
                                     <option>
                                         {dist}

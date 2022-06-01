@@ -187,6 +187,7 @@ VendorRole
     orderPlaced(_upc)
     verifyCaller(products[_upc].manufacturerID)
     {
+        addDistAddress(products[_upc].manufacturerID, distID);
         Product storage existingItem = products[_upc];
         existingItem.currentStatus = State.Shipped;
         existingItem.distributorID = distID;
