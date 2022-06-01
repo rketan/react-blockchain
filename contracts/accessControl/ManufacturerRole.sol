@@ -47,6 +47,9 @@ contract ManufacturerRole {
   }
 
   function getDistAddresses(address name) public view returns (address[] memory) {
+    // address[] memory k;
+    // k.push(name);
+
     return _getDistAddresses(name);
   }
 

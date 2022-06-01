@@ -23,29 +23,42 @@ function ChangeStatus(props) {
         setProductID(props.productID)
 
         const getDists = async () => {
-            if (localContract !== undefined && localContract.methods !== undefined) {
-                let dists = await localContract.methods.getDistAddresses(acc).call();
-                fetchDists(dists).then(function (kd) {
-                    console.log("knowndists: ", kd);
-                    setKnownDists(kd);
-                }.bind(this));
-            }
+            fetchAccount().then(function(accounts) {
+                console.log("account", accounts[0]);
+                if (accounts !== null) {
+                    fetchDists(accounts[0]).then(function (kd) {
+                        console.log("knowndists: ", kd);
+                        setKnownDists(kd);
+                    }.bind(this));
+                }
+            }.bind(this));
         }
         getDists().catch(console.error);
         
     }, [stateValue]);
 
-    async function fetchDists(dists) {
-        return dists;
+    async function fetchAccount() {
+        let accounts = null;
+        if(localWeb3 !== undefined && localWeb3.eth !== undefined)
+            accounts = await localWeb3.eth.getAccounts();
+        return accounts;
+    }
+
+    async function fetchDists(acc) {
+        if (localContract !== undefined && localContract.methods !== undefined && acc != null) {
+            let dists = await localContract.methods.getDistAddresses(acc).call();
+            console.log("dists", dists);
+            return dists;
+        }
     }
 
     const handleStateUpdate = () => {
         setStateValue(props.currentState)
     }
 
-    async function validateDist() {
+    /*async function validateDist() {
         return await localContract.methods.isDistributor(distID).call();
-    }
+    }*/
 
     async function callback() {
         if(localWeb3 !== undefined && localWeb3.eth !== undefined) {
@@ -141,7 +154,7 @@ function ChangeStatus(props) {
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="primary" disabled={!validateDist()}
+                    <Button variant="primary" //disabled={!validateDist()}
                         onClick={() => callback()}>
                         Save Changes
                     </Button>
