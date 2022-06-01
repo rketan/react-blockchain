@@ -10,6 +10,7 @@ function ChangeStatus(props) {
     const [nextValue, setNextValue] = useState(0);
     const [productID, setProductID] = useState(0);
     const [distID, setDistID] = useState(null);
+    const [knownDists, setKnownDists] = useState([]);
 
     const { web3, contract, accountId } = useContext(AppContext);
     const [localContract, setLocalContract] = contract;
@@ -19,12 +20,31 @@ function ChangeStatus(props) {
     React.useEffect(() => {
         const nextVal = Number(stateValue) + 1;
         setNextValue(nextVal)
-
         setProductID(props.productID)
+
+        const getDists = async () => {
+            if (localContract !== undefined && localContract.methods !== undefined) {
+                let dists = await localContract.methods.getDistAddresses(acc).call();
+                fetchDists(dists).then(function (kd) {
+                    console.log("knowndists: ", kd);
+                    setKnownDists(kd);
+                }.bind(this));
+            }
+        }
+        getDists().catch(console.error);
+        
     }, [stateValue]);
+
+    async function fetchDists(dists) {
+        return dists;
+    }
 
     const handleStateUpdate = () => {
         setStateValue(props.currentState)
+    }
+
+    async function validateDist() {
+        return await localContract.methods.isDistributor(distID).call();
     }
 
     async function callback() {
@@ -43,6 +63,7 @@ function ChangeStatus(props) {
             } else if (stateValue == 1) {
                 if (distID !== null) {
                     console.log("rketan : shipToDistributor : ", Date.now())
+                    var rememberEvent = await localContract.methods.addDistAddress(acc, distID).call();
                     var event = await localContract.methods.shipToDistributor(productID, distID, Date.now()).send({ from: acc });
                 }
             }
@@ -108,12 +129,19 @@ function ChangeStatus(props) {
                                     placeholder="Distributor Username"
                                     onChange={e => setDistID(e.target.value)}
                                 />
+                                <select onChange={e => setDistID(e.target.value)}>
+                                    {knownDists.map((dist) => (
+                                    <option>
+                                        {dist}
+                                    </option>
+                                    ))}
+                                </select>
                             </div>
                         }
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="primary"
+                    <Button variant="primary" disabled={!validateDist()}
                         onClick={() => callback()}>
                         Save Changes
                     </Button>

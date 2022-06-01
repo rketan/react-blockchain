@@ -16,6 +16,7 @@ library Roles {
     struct Role {
         mapping(address => bool) bearer;
         mapping(string => userMetaData) nameToAccountAndPasswordMapping;
+        mapping(address => address[]) rememberAccounts;
     }
 
 
@@ -38,6 +39,14 @@ library Roles {
             return role.nameToAccountAndPasswordMapping[name].id;
         }
         return address(0);
+    }
+
+    function addNewAddress(Role storage role, address name, address id) internal{
+        role.rememberAccounts[name].push(id);
+    }
+
+    function getAddress(Role storage role, address name) internal view returns (address[] memory) {
+        return role.rememberAccounts[name];   
     }
 
     /**

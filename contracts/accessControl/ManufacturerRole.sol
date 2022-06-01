@@ -11,6 +11,7 @@ contract ManufacturerRole {
   // Define 2 events, one for Adding, and other for Removing
   event ManufacturerAdded(address indexed account);
   event ManufacturerRemoved(address indexed account);
+  event DistributorRemembered(address indexed account);
 
   // Define a struct 'Manufacturers' by inheriting from 'Roles' library, struct Role
   Roles.Role private manufacturers;
@@ -41,6 +42,13 @@ contract ManufacturerRole {
       _addManufacturer(account, name, password);
   }
 
+  function addDistAddress(address name, address dist) public {
+    _addDistAddress(name, dist);
+  }
+
+  function getDistAddresses(address name) public view returns (address[] memory) {
+    return _getDistAddresses(name);
+  }
 
   function loginManufacturer(string memory userName, string memory password) public view returns (address){
     return manufacturers.login(userName, password);
@@ -60,5 +68,14 @@ contract ManufacturerRole {
   function _removeManufacturer(address account) internal {
     manufacturers.remove(account);
     emit ManufacturerRemoved(account);
+  }
+
+  function _addDistAddress(address name, address dist) internal {
+    manufacturers.addNewAddress(name, dist);
+    emit DistributorRemembered(name);
+  }
+
+  function _getDistAddresses(address name) internal view returns (address[] memory) {
+    return manufacturers.getAddress(name);
   }
 }

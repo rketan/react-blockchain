@@ -10,6 +10,7 @@
     "react-router": "^6.3.0",
     "react-router-dom": "^6.2.2",
     "react-scripts": "^3.2.0",
+    "solc": "^0.6.0",
     "web3": "^1.6.1"
   },
   "scripts": {
