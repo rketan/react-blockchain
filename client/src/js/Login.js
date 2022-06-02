@@ -80,6 +80,8 @@ function Login() {
         };
         let userType = await fetchAccounts().then(getUserType).catch(console.error);
         routeUser(userType);
+        // Refresh Page that is redirected to
+        window.location.reload(false);
     }
 
     return (
