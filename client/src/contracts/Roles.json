@@ -7,7 +7,7 @@
   "sourceMap": "145:1873:4:-;;132:2:-1;166:7;155:9;146:7;137:37;255:7;249:14;246:1;241:23;235:4;232:33;222:2;;269:9;222:2;293:9;290:1;283:20;323:4;314:7;306:22;347:7;338;331:24",
   "deployedSourceMap": "145:1873:4:-;;;;;;;;",
   "source": "pragma solidity >=0.4.22 <0.9.0;\nimport \"./StringUtils.sol\";\n\n/**\n * @title Roles\n * @dev Library for managing addresses assigned to a Role.\n */\nlibrary Roles {\n\n    struct userMetaData {\n        string password;\n        address id;\n        bool isUserVerified;\n    }\n\n    struct Role {\n        mapping(address => bool) bearer;\n        mapping(string => userMetaData) nameToAccountAndPasswordMapping;\n    }\n\n\n    /**\n     * @dev give an account access to this role\n   */\n    function add(Role storage role, address account, string memory name, string memory password) internal {\n        require(account != address(0), \"Address cannot be zero address\");\n        require(!has(role, account), \"This address already has this role\");\n        role.bearer[account] = true;\n\n        role.nameToAccountAndPasswordMapping[name].id = account;\n        role.nameToAccountAndPasswordMapping[name].password = password;\n        role.nameToAccountAndPasswordMapping[name].isUserVerified = true;\n    }\n\n    function login(Role storage role, string memory name, string memory password) internal view returns (address) {\n        if (role.nameToAccountAndPasswordMapping[name].isUserVerified == true &&\n            StringUtils.equal(role.nameToAccountAndPasswordMapping[name].password, password)) {\n            return role.nameToAccountAndPasswordMapping[name].id;\n        }\n        return address(0);\n    }\n\n    /**\n     * @dev remove an account's access to this role\n   */\n    function remove(Role storage role, address account) internal {\n        require(account != address(0), \"Address cannot be zero address\");\n        require(has(role, account), \"This address does not have this role yet\");\n\n        role.bearer[account] = false;\n    }\n\n    /**\n     * @dev check if an account has this role\n   * @return bool\n   */\n    function has(Role storage role, address account)\n    internal\n    view\n    returns (bool)\n    {\n        require(account != address(0), \"Address cannot be zero address\");\n        return role.bearer[account];\n    }\n}",
-  "sourcePath": "/Users/rthakkar/blockchain/react-blockchain/contracts/accessControl/Roles.sol",
+  "sourcePath": "/home/cs222/react-blockchain/contracts/accessControl/Roles.sol",
   "ast": {
     "absolutePath": "project:/contracts/accessControl/Roles.sol",
     "exportedSymbols": {
@@ -5117,12 +5117,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x4d63a6bfb359A64d9AeEc4E8342FDaC3b0C7A940",
-      "transactionHash": "0x08c08604cb0deafb5b4562d4f9e171d5c88f1aef24246e34c3c32a97fd6d541d"
+      "address": "0x1EDaD7CAe1F590e46F9eE6BBf49B08B7fD3a0c62",
+      "transactionHash": "0x9ea05c357bcbe748da434aacb7986835a561ca2d757170db11503a4e8df6cff0"
     }
   },
   "schemaVersion": "3.4.7",
-  "updatedAt": "2022-05-27T20:19:12.689Z",
+  "updatedAt": "2022-06-02T23:39:04.070Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "Library for managing addresses assigned to a Role.",
