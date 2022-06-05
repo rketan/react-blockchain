@@ -49,9 +49,10 @@ function App() {
             </AppContext.Provider>
         );
     };
+    //style={{height: '100%', backgroundColor: "lightblue", textAlign: "center", alignSelf: "center"}}
 
     return (
-        <div className="bg-image">
+        <div className="bg-image" >
             <Container style={{ maxWidth:"100%", padding:'0px' }}>
                 <div className="" style={{  }}>
                     <AppProvider>

@@ -61,25 +61,52 @@ function ChangeStatus(props) {
                    onHide={props.parentCallback} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>
-                        <div style={{marginLeft: '120px'}}>
-                            Update State Dialog
+                        <div style={{marginLeft:'90px'}}>
+                        Update State for Product {props.productID}
                         </div>
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div>
-                        <h4> Current State : {StateEnum[stateValue]} </h4>
+                        <div>
+                            <b style={{ float: "left", fontSize: '18px' }}>
+                                Current State :
+                            </b>
+                            <b style={{
+                                float: "right",
+                                backgroundColor: props.getBgColor(stateValue),
+                                width: "70%",
+                                textAlign: "center",
+                                fontSize: '18px'
+                            }}>
+                                {StateEnum[stateValue]}
+                            </b>
+                        </div>
+
                         <br></br>
-                        <h4> Next State: {StateEnum[nextValue]} </h4>
-                        <br></br>
-                        <h4> Product ID: {props.productID} </h4>
                         <br></br>
 
+                        <div style={{ paddingBlock: '10px' }}>
+                            <b style={{ float: "left", fontSize: '18px' }}>
+                                Next State :
+                            </b>
+                            <b style={{
+                                float: "right",
+                                backgroundColor: props.getBgColor(nextValue),
+                                width: "70%",
+                                textAlign: "center",
+                                fontSize: '18px'
+                            }}>
+                                {StateEnum[nextValue]}
+                            </b>
+                        </div>
+
+
                         {stateValue === "7" &&
-                            <div style={{marginTop:'5%'}}>
-                                <h5> Enter Distributor name to ship to the distributor </h5>
+                            <div style={{marginTop:'10%'}}>
+                                <b style={{fontSize: '18px'}}> Enter Distributor Username to ship to the Distributor </b>
                                 <input
-                                    style={{width: '100%', lineHeight:'40px'}}
+                                    style={{width: '100%', lineHeight:'40px', marginTop:'2%'}}
                                     type="text"
                                     value={distName}
                                     placeholder="Distributor Name"

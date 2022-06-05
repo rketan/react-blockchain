@@ -32,10 +32,12 @@ function VendorChangeProductStatus(props) {
         if (localContract.methods !== undefined) {
             if (stateValue === 4) {
                 if (props.productID !== undefined) {
+                    console.log("rketan : recieveAsVendor : ", Date.now())
                     await localContract.methods.recieveAsVendor(props.productID, Date.now()).send({from: acc});
                 }
 
             } else if (stateValue === 5) {
+                console.log("rketan : sellProduct : ", Date.now())
                 await localContract.methods.sellProduct(props.productID, Date.now()).send({from: acc});
             }
         }
@@ -49,16 +51,47 @@ function VendorChangeProductStatus(props) {
                    onEnter={handleStateUpdate}
                    onHide={props.parentCallback} centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>Update State Dialog</Modal.Title>
+                    <Modal.Title>
+                        <div style={{marginLeft:'90px'}}>
+                        Update State for Product {props.productID}
+                            </div>
+                    
+                    </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div>
-                        Current State : {StateEnum[stateValue]}
+                    <div>
+                            <b style={{ float: "left", fontSize: '18px' }}>
+                                Current State :
+                            </b>
+                            <b style={{
+                                float: "right",
+                                backgroundColor: props.getBgColor(stateValue),
+                                width: "70%",
+                                textAlign: "center",
+                                fontSize: '18px'
+                            }}>
+                                {StateEnum[stateValue]}
+                            </b>
+                        </div>
+
                         <br></br>
-                        Next State: {StateEnum[nextValue]}
                         <br></br>
-                        Product ID: {props.productID}
-                        <br></br>
+
+                        <div style={{ paddingBlock: '10px' }}>
+                            <b style={{ float: "left", fontSize: '18px' }}>
+                                Next State :
+                            </b>
+                            <b style={{
+                                float: "right",
+                                backgroundColor: props.getBgColor(nextValue),
+                                width: "70%",
+                                textAlign: "center",
+                                fontSize: '18px'
+                            }}>
+                                {StateEnum[nextValue]}
+                            </b>
+                        </div>
                     </div>
                 </Modal.Body>
                 <Modal.Footer>

@@ -25,7 +25,7 @@ VendorRole
 
     //TODO: Track the journey
     mapping(uint256 => string[]) productsHistory;
-    mapping(uint256 => mapping(string => uint256)) productStamp;
+    mapping(uint256 => mapping(string => uint256)) public productStamp;
 
     mapping(uint256 => Product) public products;
 
