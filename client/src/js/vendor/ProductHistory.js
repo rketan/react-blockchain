@@ -115,7 +115,7 @@ function ProductHistory(props) {
                 <VerticalTimelineElement
                     className="vertical-timeline-element--education"
                     date={convertTimeToDate(timestamps[6])}
-                    iconStyle={{ background: 'rgb(16, 204, 82)', color: '#fff' }}
+                    iconStyle={{ background: 'rgb(16, 204, 82)', color: '#fff'}}
                     // icon={boba}
                 >
                     <h3 className="vertical-timeline-element-title">{StateEnum[6]}</h3>
