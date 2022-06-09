@@ -44,6 +44,7 @@ function Login() {
         console.log(roleName);
         if (roleName !== undefined && roleName !== '') {
             setAccount(userId);
+            localStorage.setItem("USER_NAME", userName);
             return roleName;
         }
         alert("User not signed up")
@@ -96,7 +97,7 @@ function Login() {
           style={{ borderRadius: "50%", marginTop:'2%', marginLeft:'3%'}}
         />
 
-<h1 style={{textAlign: "center", alignSelf: "center", top:'70px', position:'fixed', left:'750px', fontSize:'78px'}}> ZotChain
+<h1 style={{textAlign: "center", alignSelf: "center", top:'70px', position:'fixed', left:'800px', fontSize:'78px'}}> ZotChain
             </h1>
             <Form onSubmit={handleLogin} className="card p-4 bg-light">
                 <Form.Group size="lg" controlId="userName">

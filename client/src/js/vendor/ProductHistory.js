@@ -49,7 +49,7 @@ function ProductHistory(props) {
                     <h3 className="vertical-timeline-element-title">{StateEnum[0]}</h3>
                     {/* <h4 className="vertical-timeline-element-subtitle">Timestamp : {convertTimeToDate(timestamps[0])}</h4> */}
                     <p>
-                        Product {props.product.name} is Manufactured by {props.product.manufacturerID}.
+                        Product {props.product.name} is Manufactured by {props.product.entityNames.manufacturerName}.
                     </p>
                 </VerticalTimelineElement>
                 <VerticalTimelineElement
@@ -61,7 +61,7 @@ function ProductHistory(props) {
                     <h3 className="vertical-timeline-element-title">{StateEnum[1]}</h3>
                     {/* <h4 className="vertical-timeline-element-subtitle">Timestamp : {timestamps[1]}</h4> */}
                     <p>
-                    Product Order is Placed by Vendor {props.product.vendorID}.
+                    Product Order is Placed by Vendor {props.product.entityNames.vendorName}.
                     </p>
                 </VerticalTimelineElement>
                 <VerticalTimelineElement
@@ -73,7 +73,7 @@ function ProductHistory(props) {
                     <h3 className="vertical-timeline-element-title">{StateEnum[2]}</h3>
                     {/* <h4 className="vertical-timeline-element-subtitle">Timestamp : {timestamps[2]}</h4> */}
                     <p>
-                    Product is Shipped to Distributor {props.product.distributorID}.
+                    Product is Shipped to Distributor {props.product.entityNames.distributorName}.
                     </p>
                 </VerticalTimelineElement>
                 <VerticalTimelineElement
@@ -85,7 +85,7 @@ function ProductHistory(props) {
                     <h3 className="vertical-timeline-element-title">{StateEnum[3]}</h3>
                     {/* <h4 className="vertical-timeline-element-subtitle">Timestamp : {timestamps[3]}</h4> */}
                     <p>
-                    Product Received to Distributor {props.product.distributorID}.
+                    Product Received to Distributor {props.product.entityNames.distributorName}.
                     </p>
                 </VerticalTimelineElement>
                 <VerticalTimelineElement
@@ -97,7 +97,7 @@ function ProductHistory(props) {
                     <h3 className="vertical-timeline-element-title">{StateEnum[4]}</h3>
                     {/* <h4 className="vertical-timeline-element-subtitle">Timestamp : {timestamps[4]}</h4> */}
                     <p>
-                    Product is Shipped to Vendor {props.product.vendorID}.
+                    Product is Shipped to Vendor {props.product.entityNames.vendorName}.
                     </p>
                 </VerticalTimelineElement>
                 <VerticalTimelineElement
@@ -109,7 +109,7 @@ function ProductHistory(props) {
                     <h3 className="vertical-timeline-element-title">{StateEnum[5]}</h3>
                     {/* <h4 className="vertical-timeline-element-subtitle">Timestamp : {timestamps[5]}</h4> */}
                     <p>
-                    Product Received by Vendor {props.product.vendorID}.
+                    Product Received by Vendor {props.product.entityNames.vendorName}.
                     </p>
                 </VerticalTimelineElement>
                 <VerticalTimelineElement
@@ -121,7 +121,7 @@ function ProductHistory(props) {
                     <h3 className="vertical-timeline-element-title">{StateEnum[6]}</h3>
                     {/* <h4 className="vertical-timeline-element-subtitle">Timestamp : {timestamps[6]}</h4> */}
                     <p>
-                        Product Purchased from Vendor {props.product.vendorID}
+                        Product Purchased from Vendor {props.product.entityNames.vendorName}
                     </p>
                 </VerticalTimelineElement>
             </VerticalTimeline>

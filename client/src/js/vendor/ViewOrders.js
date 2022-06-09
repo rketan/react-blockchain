@@ -50,9 +50,6 @@ function VendorViewOrders() {
             }
 
         };
-
-        console.log("rketan: mount function called", shouldRenderViewOrders, shouldRenderPlaceOrder, renderProductHistory)
-
         if (shouldRenderViewOrders) {
             setShouldRenderViewOrders(true);
         } else {
@@ -72,41 +69,8 @@ function VendorViewOrders() {
         }
 
         getProducts().catch(console.error);
-        // setShouldRenderPlaceOrder(false);
-        // setShouldRenderViewOrders(true);
-        // setRenderProductHistory(false);
 
     }, [shouldRenderViewOrders, renderProductHistory, shouldRenderPlaceOrder]);
-
-    // React.useEffect(() => {
-        // const getProducts = async () => {
-        //     if (localWeb3 !== undefined && localWeb3.eth !== undefined) {
-        //         const accounts = await localWeb3.eth.getAccounts();
-        //         setVendorID(accounts[0]);
-        //     }
-
-        //     if (localContract !== undefined && localContract.methods !== undefined) {
-        //         let productsCount = await localContract.methods.productsCount().call();
-                
-        //     }
-
-        // }
-
-        // if (shouldRenderPlaceOrder) {
-        //     setShouldRenderPlaceOrder(true);
-        // } else {
-        //     setShouldRenderPlaceOrder(false);
-        // }
-        // getProducts().catch(console.error);
-
-        // if (renderProductHistory) {
-        //     setRenderProductHistory(true);
-        // } else {
-        //     setRenderProductHistory(false);
-        // }
-
-
-    // }, [shouldRenderPlaceOrder, renderProductHistory]);
 
     function isValidVendorProduct(product) {
         return product.vendorID === vendorID && validProductStates.includes(product.currentStatus);
@@ -120,7 +84,8 @@ function VendorViewOrders() {
         let localProducts = [];
         const loopThroughProducts = async _ => {
             for (let index = 1; index <= productsCount; index++) {
-                let product = await localContract.methods.products(index).call();
+
+                let product = await localContract.methods.getProduct(vendorID, index).call();
                 if (operation === "viewOrder" && isValidVendorProduct(product)) {
                     localProducts.push(product);
                 } else if (operation === "placeOrder" && isValidPlaceOrderProduct(product)) {
@@ -162,8 +127,7 @@ function VendorViewOrders() {
 
         async function placeOrderInternal() {
             console.log("placing order: " + productId + " " + manufacturerID);
-            console.log("rketan : vendor placeOrder : ", Date.now())
-            await localContract.methods.placeOrder(productId, Date.now()).send({from: vendorID});
+            await localContract.methods.placeOrderRequest(productId, Date.now()).send({from: vendorID});
             alert("Order Placed Successfully");
             setShouldRenderViewOrders(false);
             setShouldRenderPlaceOrder(true);
@@ -174,24 +138,14 @@ function VendorViewOrders() {
 
     function getOnClickHandler(status, index, product) {
 
-        // function handleAcknowledgeShipment() {
-            
-        // }
-
-        // function handleCustomerPurchase() {
-            
-        // }
-
         if (status === "4") {
             setModalIsOpenToTrue(index);
         } else if (status === "5") {
             setModalIsOpenToTrue(index);
         } else if (status === "6") {
-            console.log("rketan: on click state = 6")
             setShouldRenderViewOrders(false);
             setRenderProductHistory(true)
             setShouldRenderPlaceOrder(false);
-
             setProduct(product);
         }
     }
@@ -205,13 +159,13 @@ function VendorViewOrders() {
     }
 
     const getBgColor = (currentState) => {
-        return currentState == 4 ? "rgb(255 164 114)" : currentState == 5 ? "rgb(144 108 158)" : "#55c083";
+        return currentState === "4" ? "rgb(255 164 114)" : currentState === "5" ? "rgb(144 108 158)" : "#55c083";
     }
 
     function viewProductClicked() {
         setRenderProductHistory(false);
         setShouldRenderViewOrders(true);
-        setShouldRenderPlaceOrder(false);    
+        setShouldRenderPlaceOrder(false);
     }
 
     return (
@@ -229,14 +183,6 @@ function VendorViewOrders() {
                 }}>
                     Place Order
                 </Button>
-                {/* <Button className="view-btn btn-primary" style={{marginLeft: "60px"}} 
-                onClick={() => {
-                    setRenderProductHistory(true)
-                    setShouldRenderViewOrders(false)
-                    //setShouldRenderPlaceOrder(false);
-                }}>
-                    View Product History
-                </Button> */}
                 <img src={boba}
                      style={{
                          borderRadius: "50%",
@@ -262,7 +208,7 @@ function VendorViewOrders() {
                                             <b style={{marginLeft: '20px'}}> SKU : </b> {item.sku}
                                         </Card.Subtitle>
                                         <Card.Text>
-                                            <div style={{ marginBottom: '3%' }}>
+                                            <div style={{marginBottom: '3%'}}>
                                                 <b>Description: </b> {item.desc} </div>
                                             <div>
                                                 <b style={{float: "left"}}>
@@ -288,9 +234,7 @@ function VendorViewOrders() {
                                                 index={index}/>}
 
                                         <div style={{marginRight: '10%', marginTop: '18%', marginLeft: '20%'}}>
-                                            <button
-                                                    // disabled={item.currentStatus == 6}
-                                                    className={getClassName(item.currentStatus)}
+                                            <button className={getClassName(item.currentStatus)}
                                                     onClick={() => getOnClickHandler(item.currentStatus, index, item)}>
                                                 {getButtonNameBasedOnStatus(item.currentStatus)}
                                             </button>
@@ -320,7 +264,7 @@ function VendorViewOrders() {
                                                 <b>Description: </b> {item.desc}
                                             </div>
                                             <div>
-                                                <b> Manufacturer Id : </b> {item.manufacturerID}
+                                                <b> Manufacturer Name : </b> {item.entityNames.manufacturerName}
                                             </div>
                                         </Card.Text>
 
@@ -339,8 +283,8 @@ function VendorViewOrders() {
                 </Row>
             }
 
-                {renderProductHistory && 
-                    <ProductHistory 
+            {renderProductHistory &&
+                <ProductHistory
                     product={product}/>}
         </div>
     );

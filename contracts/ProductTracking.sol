@@ -1,5 +1,5 @@
-pragma solidity >=0.4.22 <0.9.0;
-
+pragma solidity >=0.6.0 <0.9.0;
+pragma experimental ABIEncoderV2;
 import "./accessControl/DistributorRole.sol";
 import "./accessControl/ManufacturerRole.sol";
 import "./accessControl/VendorRole.sol";
@@ -11,6 +11,8 @@ ManufacturerRole,
 DistributorRole,
 VendorRole
 {
+
+
     struct Product {
         uint256 sku;
         uint256 productID;
@@ -21,31 +23,38 @@ VendorRole
         address payable distributorID;
         address payable manufacturerID;
         address payable vendorID;
+        Name entityNames;
     }
-
+    struct Name {
+        string manufacturerName;
+        string distributorName;
+        string vendorName;
+    }
     //TODO: Track the journey
     mapping(uint256 => string[]) productsHistory;
     mapping(uint256 => mapping(string => uint256)) public productStamp;
 
-    mapping(uint256 => Product) public products;
+    mapping(uint256 => Product) products;
 
     uint256 public productsCount;
 
     enum State {
         Manufactured, // 0
-        OrderPlaced, // 1
+        OrderRequestPlaced, // 1
         Shipped, // 2
         DistRecieved, // 3
         InTransit, // 4
         VendorRecieved, // 5
-        Purchased // 6
+        Purchased, // 6
+        OrderAccepted //7
     }
 
     State constant defaultState = State.Manufactured;
 
     // Define 7 events with the same 8 state values and accept 'upc' as input argument
     event Manufactured(uint256 upc);
-    event OrderPlaced(uint256 upc);
+    event OrderRequestPlaced(uint256 upc);
+    event OrderAccepted(uint256 upc);
     event Shipped(uint256 upc);
     event DistRecieved(uint256 upc);
     event InTransit(uint256 upc);
@@ -53,6 +62,9 @@ VendorRole
     event Purchased(uint256 upc);
 
     constructor() public {
+    }
+    function getProduct(address payable _address, uint256 index) public view returns (Product memory) {
+        return products[index];
     }
 
 
@@ -94,13 +106,22 @@ VendorRole
         _;
     }
 
-    modifier orderPlaced(uint256 _upc) {
+    modifier orderAcceptedCheck(uint256 _upc) {
         require(
-            products[_upc].currentStatus == State.OrderPlaced,
-            "The Item is not in OrderPlaced state!"
+            products[_upc].currentStatus == State.OrderAccepted,
+            "The Item is not in OrderAccepted state!"
         );
         _;
     }
+
+    modifier orderRequestPlaced(uint256 _upc) {
+        require(
+            products[_upc].currentStatus == State.OrderRequestPlaced,
+            "The Item is not in OrderRequestPlaced state!"
+        );
+        _;
+    }
+
 
     modifier shipped(uint256 _upc) {
         require(
@@ -148,6 +169,7 @@ VendorRole
         uint256 _sku,
         string memory desc,
         address payable _originManufacturerID,
+        string memory manufacturerName,
         uint256 time
     ) public onlyManufacturer {
         Product memory newItem;
@@ -158,6 +180,7 @@ VendorRole
         newItem.name = name;
         newItem.sku = _sku;
         newItem.desc = desc;
+        newItem.entityNames.manufacturerName = manufacturerName;
 
         productsCount = productsCount + 1;
 
@@ -168,28 +191,37 @@ VendorRole
         emit Manufactured(_upc);
     }
 
-    function placeOrder(uint256 _upc, uint256 time)
-    public
-        //        onlyManufacturer //TODO: fix this
+    function placeOrderRequest(uint256 _upc, uint256 time)
+    public onlyVendor
     manufactured(_upc)
-        //        verifyCaller(products[_upc].manufacturerID)
     {
         Product storage existingItem = products[_upc];
-        existingItem.currentStatus = State.OrderPlaced;
-        productStamp[_upc]["OrderPlaced"] = time;
-        emit OrderPlaced(_upc);
+        existingItem.currentStatus = State.OrderRequestPlaced;
+        productStamp[_upc]["OrderRequestPlaced"] = time;
+        emit OrderRequestPlaced(_upc);
     }
 
-    function shipToDistributor(uint256 _upc, address payable distID, uint256 time)
+    function orderAccepted(uint256 _upc, uint256 time)
+    public onlyManufacturer
+    orderRequestPlaced(_upc)
+    {
+        Product storage existingItem = products[_upc];
+        existingItem.currentStatus = State.OrderAccepted;
+        productStamp[_upc]["OrderAccepted"] = time;
+        emit OrderAccepted(_upc);
+    }
+
+
+    function shipToDistributor(uint256 _upc, string memory distributorName, uint256 time)
     public
     onlyManufacturer
-//    isDistributor(distID)
-    orderPlaced(_upc)
+    orderAcceptedCheck(_upc)
     verifyCaller(products[_upc].manufacturerID)
     {
         Product storage existingItem = products[_upc];
         existingItem.currentStatus = State.Shipped;
-        existingItem.distributorID = distID;
+        existingItem.entityNames.distributorName = distributorName;
+        existingItem.distributorID = payable(super.getDistributorId(distributorName));
         productStamp[_upc]["Shipped"] = time;
         emit Shipped(_upc);
     }
@@ -206,14 +238,15 @@ VendorRole
         emit DistRecieved(_upc);
     }
 
-    function shipToVendor(uint256 _upc, address payable vendorId, uint256 time)
+    function shipToVendor(uint256 _upc, string memory vendorName, uint256 time)
     public onlyDistributor
     distRecieved(_upc)
     verifyCaller(products[_upc].distributorID)
     {
         Product storage existingItem = products[_upc];
         existingItem.currentStatus = State.InTransit;
-        existingItem.vendorID = vendorId;
+        existingItem.vendorID = payable(super.getVendorId(vendorName));
+        existingItem.entityNames.vendorName = vendorName;
         productStamp[_upc]["InTransit"] = time;
         emit InTransit(_upc);
     }

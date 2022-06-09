@@ -56,26 +56,32 @@ function SignUp() {
 
                 if (!isManufacturer) {
                     await localContract.methods.addManufacturer(ethId, userName, password).send({from: ethId});
+                    localStorage.setItem("USER_NAME", userName);
                 } else {
                     alert("User already registered, please login");
                     navigate("/login");
+                    window.location.reload(false);
                 }
             } else if (role === DISTRIBUTOR) {
                 const isDistributor = await localContract.methods.isDistributor(ethId).call();
                 if (!isDistributor) {
                     await localContract.methods.addDistributor(ethId, userName, password).send({from: ethId});
+                    localStorage.setItem("USER_NAME", userName);
                 } else {
                     alert("User already registered, please login");
                     navigate("/login");
+                    window.location.reload(false);
                 }
 
             } else if (role === VENDOR) {
                 const isVendor = await localContract.methods.isVendor(ethId).call();
                 if (!isVendor) {
                     await localContract.methods.addVendor(ethId, userName, password).send({from: ethId});
+                    localStorage.setItem("USER_NAME", userName);
                 } else {
                     alert("User already registered, please login");
                     navigate("/login");
+                    window.location.reload(false)
                 }
             } else {
                 alert("error, invalid role")
@@ -99,9 +105,6 @@ function SignUp() {
                 assignRole(userEthereumId, userName, password, DISTRIBUTOR);
                 navigate("/distributor", {state: {"userName": userName}});
                 break;
-            case CUSTOMER:
-                navigate("/customer", {state: {"userName": userName}});
-                break;
             default:
                 console.log("Invalid user type");
         }
@@ -119,7 +122,7 @@ function SignUp() {
           style={{ borderRadius: "50%", marginTop:'2%', marginLeft:'3%'}}
         />
 
-        <h1 style={{textAlign: "center", alignSelf: "center", top:'70px', position:'fixed', left:'750px', fontSize:'78px'}}> ZotChain
+        <h1 style={{textAlign: "center", alignSelf: "center", top:'70px', position:'fixed', left:'800px', fontSize:'78px'}}> ZotChain
             </h1>
             <Form onSubmit={handleSubmit} className="card p-4 bg-light">
                 <Form.Group size="lg" controlId="userName">
@@ -161,7 +164,6 @@ function SignUp() {
                         <option value="vendor">Vendor</option>
                         <option value="manufacturer">Manufacturer</option>
                         <option value="distributor">Distributor</option>
-                        <option value="customer">Customer</option>
                     </Form.Select>
                 </Form.Group>
                 <br/>

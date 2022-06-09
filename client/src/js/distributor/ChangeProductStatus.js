@@ -8,13 +8,13 @@ function DistributorChangeProductStatus(props) {
     const [nextValue, setNextValue] = useState(0);
     const [productID, setProductID] = useState(0);
 
-    const [vendorId, setVendorId] = useState(null);
+    const [vendorName, setVendorName] = useState(null);
+
 
 
     const {web3, contract, accountId} = useContext(AppContext);
-    const [localContract, setLocalContract] = contract;
-    const [acc, setAcc] = accountId;
-    const [localWeb3, setLocalWeb3] = web3;
+    const localContract= contract[0];
+    const localWeb3 = web3[0];
 
     React.useEffect(() => {
         setStateValue(parseInt(props.currentState));
@@ -35,14 +35,12 @@ function DistributorChangeProductStatus(props) {
             if (stateValue === 2) {
 
                 if (props.productID !== undefined) {
-                    console.log("rketan : recieveAsDistributor : ", Date.now())
                     await localContract.methods.recieveAsDistributor(props.productID, Date.now()).send({from: accounts[0]});
                 }
 
 
             } else if (stateValue === 3) {
-                console.log("rketan : shipToVendor : ", Date.now())
-                await localContract.methods.shipToVendor(props.productID, vendorId, Date.now()).send({from: accounts[0]});
+                await localContract.methods.shipToVendor(props.productID, vendorName, Date.now()).send({from: accounts[0]});
             }
         }
         props.parentCallback()
@@ -98,14 +96,14 @@ function DistributorChangeProductStatus(props) {
                         </div>
 
                         {stateValue === 3 &&
-                            <div style={{marginTop: '10%'}}>
+                              <div style={{marginTop: '10%'}}>
                                 <b style={{fontSize: '18px'}}> Enter Vendor Username to ship to the Vendor </b>
                                 <input
                                     style={{width: '100%', lineHeight: '40px', marginTop:'2%'}}
                                     type="text"
-                                    value={vendorId}
+                                    value={vendorName}
                                     placeholder="Vendor Name"
-                                    onChange={e => setVendorId(e.target.value)}
+                                    onChange={e => setVendorName(e.target.value)}
                                 />
                             </div>
                         }

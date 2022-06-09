@@ -59,7 +59,7 @@ function DistributorViewOrders() {
         let localProducts = [];
         const loopThroughProducts = async _ => {
             for (let index = 1; index <= productsCount; index++) {
-                let product = await localContract.methods.products(index).call();
+                let product = await localContract.methods.getProduct(distributorId, index).call();
                 if (isValidDistributorProduct(product)) {
                     localProducts.push(product);
                 }
