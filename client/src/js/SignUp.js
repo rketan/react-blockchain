@@ -22,9 +22,9 @@ function SignUp() {
     const VENDOR = "vendor";
     const MANUFACTURER = "manufacturer";
     const DISTRIBUTOR = "distributor";
-    const CUSTOMER = "customer";
 
-    function setStorage(){
+    function setStorage(userType){
+        localStorage.clear();
         localStorage.setItem("userName",userName);
         localStorage.setItem("password",password);
         localStorage.setItem("userType", userType);
@@ -62,7 +62,6 @@ function SignUp() {
 
                 if (!isManufacturer) {
                     await localContract.methods.addManufacturer(ethId, userName, password).send({from: ethId});
-                    localStorage.setItem("USER_NAME", userName);
                 } else {
                     alert("User already registered, please login");
                     navigate("/login");
@@ -102,14 +101,17 @@ function SignUp() {
         switch (userType) {
             case VENDOR:
                 assignRole(userEthereumId, userName, password, VENDOR);
+                setStorage(VENDOR);
                 navigate("/vendor", {state: {"userName": userName}});
                 break;
             case MANUFACTURER:
                 assignRole(userEthereumId, userName, password, MANUFACTURER);
+                setStorage(MANUFACTURER);
                 navigate("/manufacturer", {state: {"userName": userName}});
                 break;
             case DISTRIBUTOR:
                 assignRole(userEthereumId, userName, password, DISTRIBUTOR);
+                setStorage(DISTRIBUTOR);
                 navigate("/distributor", {state: {"userName": userName}});
                 break;
             default:
