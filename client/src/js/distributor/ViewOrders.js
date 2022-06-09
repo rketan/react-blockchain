@@ -136,7 +136,8 @@ function DistributorViewOrders() {
                 {products.map((item, index) => (
                     <Col>
                         <div style={{ marginTop: '20px' }}>
-                            <Card style={{width: '100%', height: '245px'}}>
+                            <Card style={{width: '100%', height: '245px', backgroundColor: 'antiquewhite',
+                            borderColor: 'black'}}>
                                 <Card.Body>
                                     <Card.Title>{item.name}</Card.Title>
                                     <Card.Subtitle className="mb-2 text-muted">
@@ -177,12 +178,11 @@ function DistributorViewOrders() {
                                     <div style={{marginRight: '20%'}}>
                                         <Button
                                             disabled={item.currentStatus == 4}
-                                            style={{ width: '50%',
-                                                position: 'absolute',
+                                            style={{
                                                 marginTop: '10%',
                                                 marginLeft: '12%',
                                                 position: 'inherit',
-                                                width: '100%'
+                                                width: '100%',
                                                 }}
                                             className={getClassName(item.currentStatus)}
                                             onClick={getOnClickHandler(item.currentStatus, index)}>

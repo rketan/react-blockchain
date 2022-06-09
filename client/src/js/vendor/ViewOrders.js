@@ -203,7 +203,8 @@ function VendorViewOrders() {
                     {products.map((item, index) => (
                         <Col>
                             <div style={{marginTop: '20px'}}>
-                                <Card style={{width: '100%', height: '245px'}}>
+                                <Card style={{width: '100%', height: '245px', backgroundColor: 'antiquewhite',
+                                borderColor: 'black'}}>
                                     <Card.Body>
                                         <Card.Title>{item.name}</Card.Title>
                                         <Card.Subtitle className="mb-2 text-muted">
@@ -256,7 +257,8 @@ function VendorViewOrders() {
                     {purchaseEligibleProduct.map(item => (
                         <Col>
                             <div style={{marginTop: '20px'}}>
-                                <Card style={{width: '100%', height: '100%'}}>
+                                <Card style={{width: '100%', height: '100%', backgroundColor: 'antiquewhite',
+                                    borderColor: 'black'}}>
                                     <Card.Body>
                                         <Card.Title>{item.name}</Card.Title>
                                         <Card.Subtitle className="mb-2 text-muted">
