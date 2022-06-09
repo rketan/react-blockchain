@@ -155,14 +155,14 @@ function VendorViewOrders() {
 
     function getClassName(status) {
         if (status === "4" || status === "5") {
-            return "btn btn-primary btn-sm";
+            return "btn-primary";
         } else {
-            return "btn btn-success btn-sm";
+            return "btn-success";
         }
     }
 
     const getBgColor = (currentState) => {
-        return currentState === "4" ? "rgb(255 164 114)" : currentState === "5" ? "rgb(144 108 158)" : "#55c083";
+        return currentState == 4 ? "rgb(255 164 114)" : currentState == 5 ? "rgb(144 108 158)" : "#55c083";
     }
 
     function viewProductClicked() {
@@ -203,7 +203,7 @@ function VendorViewOrders() {
                     {products.map((item, index) => (
                         <Col>
                             <div style={{marginTop: '20px'}}>
-                                <Card style={{width: '20rem', height: '200px'}}>
+                                <Card style={{width: '100%', height: '245px'}}>
                                     <Card.Body>
                                         <Card.Title>{item.name}</Card.Title>
                                         <Card.Subtitle className="mb-2 text-muted">
@@ -211,7 +211,7 @@ function VendorViewOrders() {
                                             <b style={{marginLeft: '20px'}}> SKU : </b> {item.sku}
                                         </Card.Subtitle>
                                         <Card.Text>
-                                            <div style={{marginBottom: '3%'}}>
+                                            <div style={{ overflowY: "scroll", marginBottom: '3%', height:"50px" }}>
                                                 <b>Description: </b> {item.desc} </div>
                                             <div>
                                                 <b style={{float: "left"}}>
@@ -220,7 +220,7 @@ function VendorViewOrders() {
 
                                                 <b style={{
                                                     float: "right", backgroundColor: getBgColor(item.currentStatus),
-                                                    width: "60%", textAlign: "center", fontSize: '18px'
+                                                    width: "60%", textAlign: "center", fontSize: '18px', marginRight:'18px'
                                                 }}>
                                                     {StateEnum[item.currentStatus]}
                                                 </b>
@@ -237,10 +237,11 @@ function VendorViewOrders() {
                                                 index={index}/>}
 
                                         <div style={{marginRight: '10%', marginTop: '18%', marginLeft: '20%'}}>
-                                            <button className={getClassName(item.currentStatus)}
-                                                    onClick={() => getOnClickHandler(item.currentStatus, index, item)}>
+                                            <Button 
+                                                className={getClassName(item.currentStatus)}
+                                                onClick={() => getOnClickHandler(item.currentStatus, index, item)}>
                                                 {getButtonNameBasedOnStatus(item.currentStatus)}
-                                            </button>
+                                            </Button>
                                         </div>
 
                                     </Card.Body>
@@ -255,7 +256,7 @@ function VendorViewOrders() {
                     {purchaseEligibleProduct.map(item => (
                         <Col>
                             <div style={{marginTop: '20px'}}>
-                                <Card style={{width: '20rem', height: '250px'}}>
+                                <Card style={{width: '100%', height: '100%'}}>
                                     <Card.Body>
                                         <Card.Title>{item.name}</Card.Title>
                                         <Card.Subtitle className="mb-2 text-muted">
@@ -263,7 +264,7 @@ function VendorViewOrders() {
                                             <b style={{marginLeft: '20px'}}> SKU : </b> {item.sku}
                                         </Card.Subtitle>
                                         <Card.Text>
-                                            <div>
+                                            <div style={{overflowY: "scroll"}}>
                                                 <b>Description: </b> {item.desc}
                                             </div>
                                             <div>

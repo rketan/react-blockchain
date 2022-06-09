@@ -78,7 +78,7 @@ function DistributorViewOrders() {
         } else if (status === "3") {
             return "Send to Vendor";
         } else if (status === "4") {
-            return "No Action";
+            return "No Further Action";
         }
     }
 
@@ -112,9 +112,9 @@ function DistributorViewOrders() {
 
     function getClassName(status) {
         if (status === "2" || status === "3") {
-            return "btn btn-primary btn-sm";
+            return "btn-primary";
         } else if (status === "4") {
-            return "btn btn-secondary btn-sm";
+            return "btn-secondary";
         }
     }
 
@@ -136,7 +136,7 @@ function DistributorViewOrders() {
                 {products.map((item, index) => (
                     <Col>
                         <div style={{ marginTop: '20px' }}>
-                            <Card style={{ width: '20rem', height: '200px' }}>
+                            <Card style={{width: '100%', height: '245px'}}>
                                 <Card.Body>
                                     <Card.Title>{item.name}</Card.Title>
                                     <Card.Subtitle className="mb-2 text-muted">
@@ -144,7 +144,7 @@ function DistributorViewOrders() {
                                         <b style={{ marginLeft: '20px' }}> SKU : </b> {item.sku}
                                     </Card.Subtitle>
                                     <Card.Text>
-                                        <div style={{ marginBottom: '3%' }}>
+                                    <div style={{ overflowY: "scroll", marginBottom: '3%', height:"50px" }}>
                                             <b>Description: </b> {item.desc} </div>
                                         <div>
                                             <b style={{ float: "left" }}>
@@ -152,8 +152,12 @@ function DistributorViewOrders() {
                                             </b>
 
                                             <b style={{
-                                                float: "right", backgroundColor: getBgColor(item.currentStatus),
-                                                width: "60%", textAlign: "center", fontSize: '15px'
+                                                float: "right", 
+                                                backgroundColor: getBgColor(item.currentStatus),
+                                                width: "60%", 
+                                                textAlign: "center", 
+                                                fontSize: '18px',
+                                                marginRight: '18px'
                                             }}>
                                                 {productStateName(item.currentStatus)}
                                             </b>
@@ -169,14 +173,21 @@ function DistributorViewOrders() {
                                     parentCallback={setModalIsOpenToFalse}
                                     index={index}/>}
 
-                                    <div style={{ textAlign: "center", border: "1px" }}>
-                                        <button
+                                    {/* <div style={{ textAlign: "center", border: "1px" }}> */}
+                                    <div style={{marginRight: '20%'}}>
+                                        <Button
                                             disabled={item.currentStatus == 4}
-                                            style={{ marginTop: '22px', fontSize: '16px' }}
+                                            style={{ width: '50%',
+                                                position: 'absolute',
+                                                marginTop: '10%',
+                                                marginLeft: '12%',
+                                                position: 'inherit',
+                                                width: '100%'
+                                                }}
                                             className={getClassName(item.currentStatus)}
                                             onClick={getOnClickHandler(item.currentStatus, index)}>
                                             {getButtonNameBasedOnStatus(item.currentStatus)}
-                                        </button>
+                                        </Button>
                                     </div>
 
                                 </Card.Body>

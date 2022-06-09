@@ -32,12 +32,10 @@ function VendorChangeProductStatus(props) {
         if (localContract.methods !== undefined) {
             if (stateValue === 4) {
                 if (props.productID !== undefined) {
-                    console.log("rketan : recieveAsVendor : ", Date.now())
                     await localContract.methods.recieveAsVendor(props.productID, Date.now()).send({from: acc});
                 }
 
             } else if (stateValue === 5) {
-                console.log("rketan : sellProduct : ", Date.now())
                 await localContract.methods.sellProduct(props.productID, Date.now()).send({from: acc});
             }
         }

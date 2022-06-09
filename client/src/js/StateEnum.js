@@ -5,7 +5,7 @@ const StateEnum = {
     3: "Distributor Received",
     4: "In-Transit",
     5: "Vendor Received",
-    6: "Purchased",
+    6: "Customer Purchased",
     7: "Order Accepted"
 }
 
