@@ -23,7 +23,7 @@ function ViewProducts(props) {
 
     const [shouldRender, setShouldRender] = useState(false);
 
-    const validProductStates = ["0", "1", "7"];
+    const validProductStates = ["0", "1", "2"];
 
     React.useEffect(() => {
         const getProducts = async () => {
@@ -129,7 +129,7 @@ function ViewProducts(props) {
                 {products.map((item, index) => (
                     <Col>
                         <div style={{marginTop: '20px'}}>
-                            <Card style={{width: '20rem', height: '200px'}}>
+                            <Card style={{width: '100%', height: '245px'}}>
                                 <Card.Body>
                                     <Card.Title>{item.name}</Card.Title>
                                     <Card.Subtitle className="mb-2 text-muted">
@@ -137,8 +137,9 @@ function ViewProducts(props) {
                                         <b style={{marginLeft: '20px'}}> SKU : </b> {item.sku}
                                     </Card.Subtitle>
                                     <Card.Text>
-                                        <div style={{ marginBottom: '3%' }}>
-                                            <b>Description: </b> {item.desc} </div>
+                                        <div style={{ overflowY: "scroll", marginBottom: '3%', height:"50px" }}>
+                                            <b>Description: </b> {item.desc} 
+                                        </div>
                                         <div>
                                             <b style={{float: "left"}}>
                                                 Current State:
@@ -149,13 +150,24 @@ function ViewProducts(props) {
                                                 backgroundColor: getBgColor(item.currentStatus),
                                                 width: "60%", 
                                                 textAlign: "center", 
-                                                fontSize: '18px'
+                                                fontSize: '18px',
+                                                marginRight: '18px'
                                             }}>
                                                 {productStateName(item.currentStatus)}
                                             </b>
 
                                         </div>
                                     </Card.Text>
+
+                                    <div style={{marginRight: '20%'}}>
+                                        <Button
+                                            disabled={item.currentStatus == 2}
+                                            id={index}
+                                            className={item.currentStatus == 2 ? "Update-State-Btn btn-secondary" : "Update-State-Btn btn-primary"}
+                                            onClick={() => setModalIsOpenToTrue(index)}> Update State
+                                        </Button>
+
+                                    </div>
 
                                     {modalIsOpen && index === stateIndex &&
                                         <ChangeStatus
@@ -164,18 +176,8 @@ function ViewProducts(props) {
                                             currentState={item.currentStatus}
                                             productID={item.productID}
                                             parentCallback={setModalIsOpenToFalse}
-                                            index={index}/>}
-
-                                    <div style={{marginRight: '20%'}}>
-                                        <Button
-                                            disabled={item.currentStatus == 0}
-                                            id={index}
-                                            className={item.currentStatus == 2 ? "Update-State-Btn btn-secondary" : "Update-State-Btn btn-success"}
-                                            onClick={() => setModalIsOpenToTrue(index)}> Update State
-                                        </Button>
-
-                                    </div>
-
+                                            index={index}/>
+                                    }
                                 </Card.Body>
                             </Card>
                         </div>
