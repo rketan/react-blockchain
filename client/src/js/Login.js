@@ -1,4 +1,4 @@
-import React, {useContext, useState} from "react";
+import React, {useContext, useState, useEffect, useRef} from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import "../css/Login.css";
@@ -24,6 +24,36 @@ function Login() {
     const navigate = useNavigate();
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
+
+    const formRef = useRef(null);
+
+
+    function setStorage(){
+        localStorage.setItem("userName",userName);
+        localStorage.setItem("password",password);
+        localStorage.setItem("loggedIn","true");
+    }
+
+    useEffect(()=>{
+        if(localStorage.getItem("loggedIn")==="true"){
+            switch (localStorage.getItem("userType")) {
+                case VENDOR:
+                    navigate("/vendor", {state: {"userName": localStorage.getItem("userName")}});
+                    break;
+                case MANUFACTURER:
+                    navigate("/manufacturer", {state: {"userName": localStorage.getItem("userName")}});
+                    break;
+                case DISTRIBUTOR:
+                    navigate("/distributor", {state: {"userName": localStorage.getItem("userName")}});
+                    break;
+                case CUSTOMER:
+                    navigate("/customer", {state: {"userName": localStorage.getItem("userName")}});
+                    break;
+                default:
+                    console.log("Invalid user");
+            }
+        }
+    },[]);
 
     function validateForm() {
         return userName.length > 0 && password.length > 5;
@@ -80,6 +110,8 @@ function Login() {
             }
         };
         let userType = await fetchAccounts().then(getUserType).catch(console.error);
+        setStorage();
+        localStorage.setItem("userType", userType);
         routeUser(userType);
         // Refresh Page that is redirected to
         window.location.reload(false);
@@ -99,7 +131,7 @@ function Login() {
 
 <h1 style={{textAlign: "center", alignSelf: "center", top:'70px', position:'fixed', left:'800px', fontSize:'78px'}}> ZotChain
             </h1>
-            <Form onSubmit={handleLogin} className="card p-4 bg-light">
+            <Form ref={formRef} onSubmit={handleLogin} className="card p-4 bg-light">
                 <Form.Group size="lg" controlId="userName">
                     <h3 style={{color: "black", textAlign: "center", alignSelf: "center"}}>Login</h3>
                     <Form.Label>User Name</Form.Label>
