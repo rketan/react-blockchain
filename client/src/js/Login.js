@@ -1,4 +1,4 @@
-import React, {useContext, useState} from "react";
+import React, {useContext, useState, useEffect, useRef} from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import "../css/Login.css";
@@ -25,6 +25,37 @@ function Login() {
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
 
+    const formRef = useRef(null);
+
+
+    function setStorage(userType){
+        localStorage.setItem("userName",userName);
+        localStorage.setItem("password",password);
+        localStorage.setItem("loggedIn","true");
+        localStorage.setItem("userType", userType);
+    }
+
+    useEffect(()=>{
+        if(localStorage.getItem("loggedIn")==="true"){
+            switch (localStorage.getItem("userType")) {
+                case VENDOR:
+                    navigate("/vendor", {state: {"userName": localStorage.getItem("userName")}});
+                    break;
+                case MANUFACTURER:
+                    navigate("/manufacturer", {state: {"userName": localStorage.getItem("userName")}});
+                    break;
+                case DISTRIBUTOR:
+                    navigate("/distributor", {state: {"userName": localStorage.getItem("userName")}});
+                    break;
+                case CUSTOMER:
+                    navigate("/customer", {state: {"userName": localStorage.getItem("userName")}});
+                    break;
+                default:
+                    console.log("Invalid user");
+            }
+        }
+    },[]);
+
     function validateForm() {
         return userName.length > 0 && password.length > 5;
     }
@@ -41,10 +72,8 @@ function Login() {
             throw new Error("User ethereum id not linked with metamask");
         }
         const roleName = await localContract.methods.getRole(userId).call();
-        console.log(roleName);
         if (roleName !== undefined && roleName !== '') {
             setAccount(userId);
-            localStorage.setItem("USER_NAME", userName);
             return roleName;
         }
         alert("User not signed up")
@@ -80,6 +109,7 @@ function Login() {
             }
         };
         let userType = await fetchAccounts().then(getUserType).catch(console.error);
+        setStorage(userType);
         routeUser(userType);
         // Refresh Page that is redirected to
         window.location.reload(false);
@@ -99,7 +129,7 @@ function Login() {
 
 <h1 style={{textAlign: "center", alignSelf: "center", top:'70px', position:'fixed', left:'800px', fontSize:'78px'}}> ZotChain
             </h1>
-            <Form onSubmit={handleLogin} className="card p-4 bg-light">
+            <Form ref={formRef} onSubmit={handleLogin} className="card p-4 bg-light">
                 <Form.Group size="lg" controlId="userName">
                     <h3 style={{color: "black", textAlign: "center", alignSelf: "center"}}>Login</h3>
                     <Form.Label>User Name</Form.Label>

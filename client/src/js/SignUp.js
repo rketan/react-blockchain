@@ -24,6 +24,12 @@ function SignUp() {
     const DISTRIBUTOR = "distributor";
     const CUSTOMER = "customer";
 
+    function setStorage(){
+        localStorage.setItem("userName",userName);
+        localStorage.setItem("password",password);
+        localStorage.setItem("userType", userType);
+        localStorage.setItem("loggedIn","true");
+    }
 
     function validateForm() {
         return userName.length > 0 && userType.length > 0 && userEthereumId.length > 0 && password.length > 5;
@@ -87,6 +93,7 @@ function SignUp() {
                 alert("error, invalid role")
             }
         }
+
     }
 
     function handleSubmit(event) {
