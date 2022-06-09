@@ -86,6 +86,9 @@ function VendorViewOrders() {
             for (let index = 1; index <= productsCount; index++) {
 
                 let product = await localContract.methods.getProduct(vendorID, index).call();
+                if (product.name === "") {
+                    continue;
+                }
                 if (operation === "viewOrder" && isValidVendorProduct(product)) {
                     localProducts.push(product);
                 } else if (operation === "placeOrder" && isValidPlaceOrderProduct(product)) {

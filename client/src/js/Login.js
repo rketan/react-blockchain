@@ -28,10 +28,11 @@ function Login() {
     const formRef = useRef(null);
 
 
-    function setStorage(){
+    function setStorage(userType){
         localStorage.setItem("userName",userName);
         localStorage.setItem("password",password);
         localStorage.setItem("loggedIn","true");
+        localStorage.setItem("userType", userType);
     }
 
     useEffect(()=>{
@@ -71,10 +72,8 @@ function Login() {
             throw new Error("User ethereum id not linked with metamask");
         }
         const roleName = await localContract.methods.getRole(userId).call();
-        console.log(roleName);
         if (roleName !== undefined && roleName !== '') {
             setAccount(userId);
-            localStorage.setItem("USER_NAME", userName);
             return roleName;
         }
         alert("User not signed up")
@@ -110,8 +109,7 @@ function Login() {
             }
         };
         let userType = await fetchAccounts().then(getUserType).catch(console.error);
-        setStorage();
-        localStorage.setItem("userType", userType);
+        setStorage(userType);
         routeUser(userType);
         // Refresh Page that is redirected to
         window.location.reload(false);

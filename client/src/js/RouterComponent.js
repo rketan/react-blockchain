@@ -1,43 +1,40 @@
 import React from "react"
-import {BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-dom';
-
-import ViewProducts from "./manufacturer/ViewProducts";
-import ViewOrders from "./manufacturer/ViewOrders";
-import ChangeProductStatus from "./manufacturer/ChangeStatus";
-import AddProduct from "./manufacturer/AddProducts";
+import {BrowserRouter as Router, Navigate, Route, Routes} from 'react-router-dom';
 import ManufacturerDashboard from "./manufacturer/ManufacturerDashboard";
 import SignUp from "./SignUp";
 import Login from "./Login";
 import DistributorDashboard from "./distributor/DistributorDashboard";
 import VendorDashboard from "./vendor/VendorDashboard";
 import CustomerDashboard from "./customer/CustomerDashboard";
-import DistributorChangeProductStatus from "./distributor/ChangeProductStatus";
-import DistributorViewOrders from "./distributor/ViewOrders";
 import VendorViewOrders from "./vendor/ViewOrders";
 import VendorChangeProductStatus from "./vendor/ChangeProductStatus";
 
 export default function router() {
 
-    const NULL_USER = "0x0000000000000000000000000000000000000000";
     const VENDOR = "vendor";
     const MANUFACTURER = "manufacturer";
     const DISTRIBUTOR = "distributor";
     const CUSTOMER = "customer";
 
-    function Guard(props){
-        if(localStorage.getItem("loggedIn")!=="true"||localStorage.getItem("userType")!==props.path){
-            return (<Navigate replace to="/"/>)
-        }
-        else{
-            return(
+    function Guard(props) {
+        if (localStorage.getItem("loggedIn") !== "true") {
+            alert("You are logged out, please login");
+            localStorage.clear();
+            return (<Navigate replace={true} to="/"/>)
+        } else if (localStorage.getItem("userType") !== props.path) {
+            alert("You are not authorized to view this page. Redirecting back to your dashboard")
+            let path = "/" + localStorage.getItem("userType");
+            return (<Navigate replace={true} to={path} state={{"userName": localStorage.getItem("userName")}}/>)
+        } else {
+            return (
                 <div>
-                {props.element}
+                    {props.element}
                 </div>
             )
         }
-        
+
     }
-    
+
     return (
         <Router>
             <Routes>
@@ -46,7 +43,7 @@ export default function router() {
                 <Route path="/login" element={<Login/>}/>
                 <Route path="/signup" element={<SignUp/>}/>
 
-                <Route path="/manufacturer" element={<Guard element={<ManufacturerDashboard/>} path={MANUFACTURER}/> }/>
+                <Route path="/manufacturer" element={<Guard element={<ManufacturerDashboard/>} path={MANUFACTURER}/>}/>
                 <Route path="/distributor" element={<Guard element={<DistributorDashboard/>} path={DISTRIBUTOR}/>}/>
                 <Route path="/vendor" element={<Guard element={<VendorDashboard/>} path={VENDOR}/>}/>
                 <Route path="/vendor/view-current-orders" element={<VendorViewOrders/>}/>

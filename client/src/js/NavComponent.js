@@ -14,7 +14,6 @@ function NavComponent(props) {
   function logOut(){
     localStorage.clear();
     navigate("/");
-    return;
   }
 
     return (
@@ -40,7 +39,9 @@ function NavComponent(props) {
       <div style={{ marginTop:"12px", fontSize:"32px", marginLeft:"auto",marginRight:"24px",color:"white" }}> 
       Hi, {props.username}</div>
 
-      <Button style={{ marginTop:"12px", fontSize:"32px", marginLeft:"12px",marginRight:"24px",color:"white" }} onClick={()=>logOut()}>
+      {/*<Button class="btn btn-secondary" block size="lg">   fontSize:"32px" color:"white" */}
+
+      <Button class="btn btn-secondary" block size="lg" style={{ marginTop:"12px", marginLeft:"12px",marginRight:"24px"}} onClick={()=>logOut()}>
         Log Out
       </Button>
       
