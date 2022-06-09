@@ -16,6 +16,7 @@ function App() {
     const [accountId, setAccountId] = useState(null);
 
     React.useEffect(() => {
+        document.title = "ZotChain"
 
         // Get network provider and web3 instance.
         const fetchWeb3 = async () => {

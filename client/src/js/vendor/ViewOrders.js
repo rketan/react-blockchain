@@ -84,7 +84,8 @@ function VendorViewOrders() {
         let localProducts = [];
         const loopThroughProducts = async _ => {
             for (let index = 1; index <= productsCount; index++) {
-                let product = await localContract.methods.products(index).call();
+
+                let product = await localContract.methods.getProduct(vendorID, index).call();
                 if (operation === "viewOrder" && isValidVendorProduct(product)) {
                     localProducts.push(product);
                 } else if (operation === "placeOrder" && isValidPlaceOrderProduct(product)) {
@@ -158,7 +159,7 @@ function VendorViewOrders() {
     }
 
     const getBgColor = (currentState) => {
-        return currentState == 4 ? "rgb(255 164 114)" : currentState == 5 ? "rgb(144 108 158)" : "#55c083";
+        return currentState === "4" ? "rgb(255 164 114)" : currentState === "5" ? "rgb(144 108 158)" : "#55c083";
     }
 
     function viewProductClicked() {
@@ -207,7 +208,7 @@ function VendorViewOrders() {
                                             <b style={{marginLeft: '20px'}}> SKU : </b> {item.sku}
                                         </Card.Subtitle>
                                         <Card.Text>
-                                            <div style={{ marginBottom: '3%' }}>
+                                            <div style={{marginBottom: '3%'}}>
                                                 <b>Description: </b> {item.desc} </div>
                                             <div>
                                                 <b style={{float: "left"}}>
@@ -263,7 +264,7 @@ function VendorViewOrders() {
                                                 <b>Description: </b> {item.desc}
                                             </div>
                                             <div>
-                                                <b> Manufacturer Id : </b> {item.manufacturerID}
+                                                <b> Manufacturer Name : </b> {item.entityNames.manufacturerName}
                                             </div>
                                         </Card.Text>
 
@@ -282,8 +283,8 @@ function VendorViewOrders() {
                 </Row>
             }
 
-                {renderProductHistory &&
-                    <ProductHistory
+            {renderProductHistory &&
+                <ProductHistory
                     product={product}/>}
         </div>
     );

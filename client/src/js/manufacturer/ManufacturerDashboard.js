@@ -12,7 +12,7 @@ function ManufacturerDashboard() {
             username={location.state.userName}
             entity={"Manufacturer"}
             />
-            <ViewProducts />
+            <ViewProducts userName={location.state.userName}/>
         </>
     )
 }

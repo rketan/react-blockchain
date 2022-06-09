@@ -4,7 +4,6 @@ import NavComponent from "../NavComponent";
 import VendorViewOrders from "./ViewOrders"
 
 function VendorDashboard() {
-    const navigate = useNavigate();
     const location = useLocation();
 
     return (

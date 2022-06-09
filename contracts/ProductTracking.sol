@@ -1,5 +1,5 @@
 pragma solidity >=0.6.0 <0.9.0;
-
+pragma experimental ABIEncoderV2;
 import "./accessControl/DistributorRole.sol";
 import "./accessControl/ManufacturerRole.sol";
 import "./accessControl/VendorRole.sol";
@@ -11,6 +11,8 @@ ManufacturerRole,
 DistributorRole,
 VendorRole
 {
+
+
     struct Product {
         uint256 sku;
         uint256 productID;
@@ -21,13 +23,18 @@ VendorRole
         address payable distributorID;
         address payable manufacturerID;
         address payable vendorID;
+        Name entityNames;
     }
-
+    struct Name {
+        string manufacturerName;
+        string distributorName;
+        string vendorName;
+    }
     //TODO: Track the journey
     mapping(uint256 => string[]) productsHistory;
     mapping(uint256 => mapping(string => uint256)) public productStamp;
 
-    mapping(uint256 => Product) public products;
+    mapping(uint256 => Product) products;
 
     uint256 public productsCount;
 
@@ -55,6 +62,9 @@ VendorRole
     event Purchased(uint256 upc);
 
     constructor() public {
+    }
+    function getProduct(address payable _address, uint256 index) public view returns (Product memory) {
+        return products[index];
     }
 
 
@@ -159,6 +169,7 @@ VendorRole
         uint256 _sku,
         string memory desc,
         address payable _originManufacturerID,
+        string memory manufacturerName,
         uint256 time
     ) public onlyManufacturer {
         Product memory newItem;
@@ -169,6 +180,7 @@ VendorRole
         newItem.name = name;
         newItem.sku = _sku;
         newItem.desc = desc;
+        newItem.entityNames.manufacturerName = manufacturerName;
 
         productsCount = productsCount + 1;
 
@@ -208,6 +220,7 @@ VendorRole
     {
         Product storage existingItem = products[_upc];
         existingItem.currentStatus = State.Shipped;
+        existingItem.entityNames.distributorName = distributorName;
         existingItem.distributorID = payable(super.getDistributorId(distributorName));
         productStamp[_upc]["Shipped"] = time;
         emit Shipped(_upc);
@@ -233,6 +246,7 @@ VendorRole
         Product storage existingItem = products[_upc];
         existingItem.currentStatus = State.InTransit;
         existingItem.vendorID = payable(super.getVendorId(vendorName));
+        existingItem.entityNames.vendorName = vendorName;
         productStamp[_upc]["InTransit"] = time;
         emit InTransit(_upc);
     }

@@ -9,12 +9,12 @@ import Card from 'react-bootstrap/Card'
 import AddProduct from './AddProducts';
 import boba from '../../static/img/uciboba.jpeg'
 
-function ViewProducts() {
+function ViewProducts(props) {
     const {web3, contract, accountId} = useContext(AppContext);
     const localContract = contract[0];
     const [acc, setAcc] = accountId;
     const localWeb3 = web3[0];
-
+    const userName = props.userName === "" ? localStorage.getItem("USER_NAME") : props.userName;
     const [products, setProducts] = useState([]);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [addProductModal, setAddProductModal] = useState(false);
@@ -52,7 +52,7 @@ function ViewProducts() {
         let localProducts = [];
         const loopThroughProducts = async _ => {
             for (let index = 1; index <= productsCount; index++) {
-                let product = await localContract.methods.products(index).call();
+                let product = await localContract.methods.getProduct(acc, index).call();
                 if (isValidManufacturerProduct(product)) {
                     localProducts.push(product);
                 }
@@ -121,6 +121,7 @@ function ViewProducts() {
 
             {addProductModal &&
                 <AddProduct
+                    userName = {userName}
                     parentCallback={setAddProductModalToFalse}
                 />}
 
@@ -158,6 +159,7 @@ function ViewProducts() {
 
                                     {modalIsOpen && index === stateIndex &&
                                         <ChangeStatus
+                                            userName = {userName}
                                             getBgColor={getBgColor}
                                             currentState={item.currentStatus}
                                             productID={item.productID}
