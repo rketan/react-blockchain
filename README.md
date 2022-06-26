@@ -6,6 +6,8 @@
 
 ### Product Demo: https://youtu.be/4wyHyo2Xndw
 
+### Pitch Deck: https://docs.google.com/presentation/d/1xi36JvutJgvlAWr22bANYZWNR5FSuxc2BvKpaRaLksY/edit#slide=id.g128c0204154_0_794
+
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## To run the application
