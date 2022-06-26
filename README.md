@@ -1,11 +1,14 @@
-# Counterfeit Product Detection Using Blockchain
+# ZotChain - Counterfeit Product Detection Using Blockchain
 
 <img width="852" alt="Screen Shot 2022-06-26 at 11 31 21 AM" src="https://user-images.githubusercontent.com/94927745/175828958-617aaf3d-b306-4aed-ac62-eb4d21b70083.png">
 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Product Demo: https://youtu.be/4wyHyo2Xndw
+### Product Demo: https://youtu.be/4wyHyo2Xndw
 
-To run the application
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## To run the application
 
 1. Install Ganache
 
